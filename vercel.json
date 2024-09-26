@@ -1,6 +1,5 @@
 {
   "build": {
-    "outputDirectory": "dist",
     "env": {
       "NODE_ENV": "production"
     },
