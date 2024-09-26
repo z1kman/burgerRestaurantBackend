@@ -1,36 +1,27 @@
 import express, { Request, Response } from "express";
-import { Client } from "pg";
-import dotenv from "dotenv";
+import { getAllProductsWithTranslations } from "./models/product";
 
 const app = express();
-dotenv.config();
+
 const PORT = process.env.PORT || 8080;
 
-const connectionString = `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}/${process.env.DB_NAME}`;
-const client = new Client({
-  connectionString: connectionString,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
 
-async function connectToDatabase() {
-  try {
-    await client.connect();
-    console.log("Connected to PostgreSQL database");
-    // Здесь можно выполнять запросы к базе данных
-  } catch (err: unknown) {
-    // Указываем тип ошибки
-    if (err instanceof Error) {
-      console.error("Connection error", err.stack);
-    } else {
-      console.error("Unknown error", err);
-    }
-  } finally {
-    await client.end(); // Закрываем соединение
+app.get("/api/products", async (req: Request, res: Response) => {
+  const lang = req.query.lang as string;
+
+  if (!lang) {
+    res.status(400).json({ error: "Language query parameter is required" });
   }
-}
-connectToDatabase();
+
+  try {
+    const products = await getAllProductsWithTranslations(lang);
+    res.json(products);
+  } catch (err) {
+    console.error("Error fetching products:", err);
+    res.status(500).json({ error: "Failed to fetch products" });
+  }
+  return
+});
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Started!");
