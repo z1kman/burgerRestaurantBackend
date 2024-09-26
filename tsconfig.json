@@ -1,12 +1,17 @@
 {
-    "compilerOptions": {
-      "target": "ES6",
+  "compilerOptions": {
       "module": "commonjs",
-      "outDir": "./dist",
-      "rootDir": "api",
-      "strict": true,
-      "esModuleInterop": true
-    },
-    "include": ["api/**/*.ts"],
-    "exclude": ["node_modules"]
+      "esModuleInterop": true,
+      "allowSyntheticDefaultImports": true,
+      "target": "es6",
+      "noImplicitAny": true,
+      "moduleResolution": "node",
+      "sourceMap": true,
+      "outDir": "dist",
+      "baseUrl": ".",
+      "paths": {
+          "*": ["node_modules/*", "src/types/*"]
+      }
+  },
+  "include": ["./src/**/*"]
   }
