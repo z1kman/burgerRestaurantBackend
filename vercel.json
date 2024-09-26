@@ -3,10 +3,6 @@
     "env": {
       "NODE_ENV": "production"
     },
-    "commands": {
-      "build": "npm run build",
-      "start": "npm run start"
-    },
     "routes": [
       {
         "src": "/(.*)",
