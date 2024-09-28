@@ -1,33 +1,34 @@
 import { Request, Response } from "express";
-import { handleError } from "../handlers/handleError";
 import { ErrorName } from "../constants/errors";
 import { Product } from "../models/product";
+import { ProductType } from "../models/productType";
 import { ProductTranslation } from "../models/productTranslation";
 import { Language } from "../models/language";
+import { handleError } from "../handlers/handleError";
 import { sequelize } from "../database";
-import { ProductType } from "../models/productType";
 
-export const getProducts = async (
-  req: Request,
-  res: Response
-): Promise<any> => {
+export const getProduct = async (req: Request, res: Response): Promise<any> => {
   const lang = req.query.lang as string;
+  const { id } = req.params;
 
   if (!lang) {
     handleError(res, { name: ErrorName.NO_LANGUAGE_ATTRIBUTE });
   }
+  if (!id) {
+    handleError(res, { name: ErrorName.NO_ID });
+  }
 
   try {
-    const products = await Product.findAll({
+    const products = await Product.findOne({
       attributes: [
         "id",
         "price",
-        ["image_url_small", "imageUrl"],
+        ["image_url_full", "imageUrl"],
         [sequelize.col("ProductType.type"), "type"],
         [sequelize.col("ProductTranslations.name"), "name"],
         [
-          sequelize.col("ProductTranslations.short_description"),
-          "shortDescription",
+          sequelize.col("ProductTranslations.long_description"),
+          "longDescription",
         ],
         [sequelize.col("ProductTranslations.Language.name"), "language"],
       ],
@@ -50,10 +51,11 @@ export const getProducts = async (
           ],
         },
       ],
+      where: { id },
       raw: true,
     });
 
-    res.json(products);
+    res.json(products || {});
   } catch (err) {
     console.error("Error fetching products", err);
     handleError(res, { message: "Error fetching products" });

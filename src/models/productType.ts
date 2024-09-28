@@ -22,5 +22,3 @@ ProductType.init(
     sequelize,
   }
 );
-
-

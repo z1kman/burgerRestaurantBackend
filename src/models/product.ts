@@ -1,6 +1,7 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../database";
 import { ProductTranslation } from "./productTranslation";
+import { ProductType } from "./productType";
 
 export class Product extends Model {}
 Product.init(
@@ -46,6 +47,9 @@ Product.init(
 );
 
 Product.hasMany(ProductTranslation, {
-  foreignKey: 'product_id',
-  onDelete: 'CASCADE'
+  foreignKey: "product_id"
+});
+
+Product.belongsTo(ProductType, {
+  foreignKey: "product_type_id"
 });
