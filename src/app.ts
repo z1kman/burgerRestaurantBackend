@@ -1,6 +1,5 @@
 import express, { Request, Response } from "express";
 import { productsRouter } from "./routes/products";
-import { handleError } from "./middlewares/handleError";
 
 const app = express();
 
