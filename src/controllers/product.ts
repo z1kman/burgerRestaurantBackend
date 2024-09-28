@@ -7,7 +7,8 @@ import { Language } from "../models/language";
 import { handleError } from "../handlers/handleError";
 import { sequelize } from "../database";
 
-export const getProduct = async (req: Request, res: Response): Promise<any> => {
+
+export const getProduct = async (req: Request, res: Response) => {
   const lang = req.query.lang as string;
   const { id } = req.params;
 

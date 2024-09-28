@@ -7,10 +7,7 @@ import { Language } from "../models/language";
 import { sequelize } from "../database";
 import { ProductType } from "../models/productType";
 
-export const getProducts = async (
-  req: Request,
-  res: Response
-): Promise<any> => {
+export const getProducts = async (req: Request, res: Response) => {
   const lang = req.query.lang as string;
 
   if (!lang) {
