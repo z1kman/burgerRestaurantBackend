@@ -4,6 +4,7 @@ import { ErrorName } from "../constants/errors";
 import { Product } from "../models/product";
 import { ProductTranslation } from "../models/productTranslation";
 import { Language } from "../models/language";
+import { sequelize } from "../database";
 
 export const getProducts = async (
   req: Request,
@@ -17,20 +18,32 @@ export const getProducts = async (
 
   try {
     const products = await Product.findAll({
-      attributes: ["id", "price", ["image_url", "imageUrl"]],
+      attributes: [
+        "id",
+        "price",
+        ["image_url_small", "imageUrl"],
+        [sequelize.col("ProductTranslations.name"), "name"],
+        [
+          sequelize.col("ProductTranslations.short_description"),
+          "shortDescription",
+        ],
+        [sequelize.col("ProductTranslations.Language.name"), "language"],
+      ],
       include: [
         {
           model: ProductTranslation,
-          attributes: ["name", "short_description", "long_description"],
+          attributes: [],
           include: [
             {
               model: Language,
-              attributes: ["name"],
+              required: true,
+              attributes: [],
               where: { name: lang },
             },
           ],
         },
       ],
+      raw: true,
     });
 
     res.json(products);

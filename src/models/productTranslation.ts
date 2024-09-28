@@ -45,7 +45,7 @@ ProductTranslation.init(
     },
   },
   {
-    tableName: "product_translations",
+    tableName: "product_translation",
     timestamps: false,
     indexes: [
       {

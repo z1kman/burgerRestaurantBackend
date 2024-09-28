@@ -29,7 +29,11 @@ Product.init(
       type: DataTypes.FLOAT(10, 2),
       allowNull: false,
     },
-    image_url: {
+    image_url_small: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    image_url_full: {
       type: DataTypes.STRING(255),
       allowNull: true,
     },
