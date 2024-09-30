@@ -8,7 +8,8 @@ import { sequelize } from "../database";
 import { ProductType } from "../models/productType";
 
 export const getProducts = async (req: Request, res: Response) => {
-  const lang = req.query.lang as string;
+  const lang = req.query.lang;
+  const type = req.query.type;
 
   if (!lang) {
     handleError(res, { name: ErrorName.NO_LANGUAGE_ATTRIBUTE });
@@ -33,6 +34,11 @@ export const getProducts = async (req: Request, res: Response) => {
           model: ProductType,
           attributes: [],
           required: true,
+          where: type
+            ? {
+                type,
+              }
+            : null,
         },
         {
           model: ProductTranslation,
