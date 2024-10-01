@@ -9,11 +9,11 @@ export const login = {
           properties: {
             username: {
               type: "string",
-              example: 'user1'
+              example: "user1",
             },
             password: {
               type: "string",
-              example: 'user'
+              example: "user",
             },
           },
           required: ["username", "password"],
@@ -30,30 +30,24 @@ export const login = {
             type: "object",
             properties: {
               id: {
-                type: "number",
-                example: 1,
-              },
-              price: {
                 type: "string",
-                example: "2.55",
+                example: "9505b...3ab",
               },
-              name: {
+              username: {
                 type: "string",
-                example: "Сheeseburger",
+                example: "user1",
               },
-              longDescription: {
+              firstName: {
                 type: "string",
-                example:
-                  "The cheeseburger with two beef patties and melted cheese is a true flavor symphony! Juicy patties, fresh vegetables—crunchy lettuce, tomatoes, and pickles—and our secret sauce, all nestled in a soft bun. A true celebration for food lovers!",
+                example: "Ivan",
               },
-              imageUrl: {
+              lastName: {
                 type: "string",
-                example:
-                  "https://res.cloudinary.com/dyvvorqvv/image/upload/double_cheeseburger_240_bq1rcv.png",
+                example: "Ivanov",
               },
-              language: {
+              token: {
                 type: "string",
-                example: "en",
+                example: "eyJ....9",
               },
             },
           },
