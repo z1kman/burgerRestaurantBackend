@@ -1,28 +1,26 @@
-const getProduct = {
-  tags: ["Product"],
-  description: "Get one product",
-  summary: "Get complete product information",
-  parameters: [
-    {
-      in: "path",
-      name: "productID",
-      required: true,
-      description: "ID of the product to be recieved",
-      schema: {
-        type: "string",
+export const login = {
+  tags: ["Login"],
+  requestBody: {
+    required: true,
+    content: {
+      "application/json": {
+        schema: {
+          type: "object",
+          properties: {
+            username: {
+              type: "string",
+              example: 'user1'
+            },
+            password: {
+              type: "string",
+              example: 'user'
+            },
+          },
+          required: ["username", "password"],
+        },
       },
     },
-    {
-      in: "query",
-      name: "lang",
-      required: true,
-      description: "Response language (ru - Russian, en - English) ",
-      schema: {
-        type: "string",
-        enum: ["ru", "en"],
-      },
-    },
-  ],
+  },
   responses: {
     "200": {
       description: "successful operation",
@@ -75,7 +73,7 @@ const getProduct = {
               },
               message: {
                 type: "string",
-                example: "Missing required attribute: 'lang'",
+                example: "Auth failed'",
               },
             },
           },
@@ -95,7 +93,7 @@ const getProduct = {
               },
               message: {
                 type: "string",
-                example: "Error fetching products",
+                example: "Error during login",
               },
             },
           },
@@ -104,5 +102,3 @@ const getProduct = {
     },
   },
 };
-
-export { getProduct };

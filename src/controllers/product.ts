@@ -15,9 +15,6 @@ export const getProduct = async (req: Request, res: Response) => {
   if (!lang) {
     handleError(res, { name: ErrorName.NO_LANGUAGE_ATTRIBUTE });
   }
-  if (!id) {
-    handleError(res, { name: ErrorName.NO_ID });
-  }
 
   try {
     const products = await Product.findOne({
@@ -58,7 +55,7 @@ export const getProduct = async (req: Request, res: Response) => {
 
     res.json(products || {});
   } catch (err) {
-    console.error("Error fetching products", err);
-    handleError(res, { message: "Error fetching products" });
+    console.error("Error fetching product", err);
+    handleError(res, { message: "Error fetching product" });
   }
 };

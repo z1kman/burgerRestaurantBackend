@@ -1,5 +1,6 @@
 import { getProduct } from "./getProduct.docs";
 import { getProducts } from "./getProducts.docs";
+import { login } from "./login.docs";
 
 const apiDocumentation = {
   openapi: "3.0.1",
@@ -15,13 +16,19 @@ const apiDocumentation = {
     {
       name: "Product",
     },
+    {
+      name: "Login",
+    },
   ],
   paths: {
     "/api/products": {
       get: getProducts,
     },
-    "/api/product/:id": {
+    "/api/product/{productID}": {
       get: getProduct,
+    },
+    "/api/user/login": {
+      post: login,
     },
   },
   components: {

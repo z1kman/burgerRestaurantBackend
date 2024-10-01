@@ -1,13 +1,13 @@
+import { config } from "../config";
+
 const { Sequelize } = require("sequelize");
-import dotenv from "dotenv";
-dotenv.config();
 
 export const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASSWORD,
+  config.DB_NAME,
+  config.DB_USER,
+  config.DB_PASSWORD,
   {
-    host: process.env.DB_HOST,
+    host: config.DB_HOST,
     dialect: "postgres",
     dialectOptions: {
       ssl: {
