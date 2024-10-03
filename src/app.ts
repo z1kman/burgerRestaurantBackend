@@ -16,8 +16,4 @@ app.use("/api/user", authRouter);
 app.use("/", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 swaggerUi.setup(apiDocumentation);
 
-// app.get("/", (req: Request, res: Response) => {
-//   res.send("Started!");
-// });
-
 export { app };

@@ -1,5 +1,6 @@
 import { getProduct } from "./getProduct.docs";
 import { getProducts } from "./getProducts.docs";
+import { getUser } from "./getUser.docs";
 import { login } from "./login.docs";
 
 const apiDocumentation = {
@@ -14,10 +15,7 @@ const apiDocumentation = {
       name: "Products",
     },
     {
-      name: "Product",
-    },
-    {
-      name: "Login",
+      name: "User",
     },
   ],
   paths: {
@@ -30,10 +28,18 @@ const apiDocumentation = {
     "/api/user/login": {
       post: login,
     },
+    "/api/user/info": {
+      get: getUser,
+    },
   },
   components: {
-    securitySchemes: {},
-    schemas: {},
+    securitySchemes: {
+      bearerAuth: {
+        type: "http",
+        scheme: "bearer",
+        description: "Value: Bearer ",
+      },
+    },
   },
 };
 

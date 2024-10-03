@@ -1,5 +1,5 @@
 const getProduct = {
-  tags: ["Product"],
+  tags: ["Products"],
   description: "Get one product",
   summary: "Get complete product information",
   parameters: [

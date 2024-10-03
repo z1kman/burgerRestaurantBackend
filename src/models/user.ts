@@ -1,6 +1,7 @@
 import { Model } from "sequelize";
 const { DataTypes } = require("sequelize");
 import { sequelize } from "../database";
+import { Wallet } from "./wallet";
 
 interface UserAttributes {
   id: string;
@@ -48,3 +49,5 @@ User.init(
     sequelize,
   }
 );
+
+User.hasOne(Wallet, { foreignKey: 'user_id' });

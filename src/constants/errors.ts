@@ -3,4 +3,5 @@ export enum ErrorName {
   NO_ID = "no id param",
   USER_NOT_FOUND = "user not found",
   WRONG_PASSWORD = "wrong password",
+  AUTH_FAILED = 'auth failed'
 }

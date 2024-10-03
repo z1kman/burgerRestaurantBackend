@@ -6,7 +6,9 @@ export function handleError(res: Response, err: ErrorType) {
   const errorName = err.name;
   const baseBody = { success: false };
 
-  if ([ErrorName.NO_LANGUAGE_ATTRIBUTE].includes(errorName)) {
+  if ([ErrorName.AUTH_FAILED].includes(errorName)) {
+    res.status(403).send({ ...baseBody, message: "Auth failed" });
+  } else if ([ErrorName.NO_LANGUAGE_ATTRIBUTE].includes(errorName)) {
     res
       .status(400)
       .send({ ...baseBody, message: "Missing required attribute: 'lang'" });

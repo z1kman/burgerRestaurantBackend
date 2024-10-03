@@ -1,5 +1,5 @@
 export const login = {
-  tags: ["Login"],
+  tags: ["User"],
   requestBody: {
     required: true,
     content: {
