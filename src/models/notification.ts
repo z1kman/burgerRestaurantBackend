@@ -4,8 +4,8 @@ import { ProductTranslation } from "./productTranslation";
 import { ProductType } from "./productType";
 import { NotificationTranslation } from "./notificationTranslation";
 
-export class Notification extends Model {}
-Notification.init(
+export class NotificationModel extends Model {}
+NotificationModel.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -26,6 +26,6 @@ Notification.init(
   }
 );
 
-Notification.hasMany(NotificationTranslation, {
+NotificationModel.hasMany(NotificationTranslation, {
   foreignKey: "notification_id"
 });

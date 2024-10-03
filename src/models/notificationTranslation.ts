@@ -1,6 +1,7 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../database";
 import { Language } from "./language";
+import { NotificationModel } from "./notification";
 
 export class NotificationTranslation extends Model {}
 NotificationTranslation.init(
@@ -15,7 +16,7 @@ NotificationTranslation.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "notification",
+        model: NotificationModel,
         key: "id",
       },
       onUpdate: "NO ACTION",
@@ -25,7 +26,7 @@ NotificationTranslation.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "language",
+        model: Language,
         key: "id",
       },
       onUpdate: "NO ACTION",
