@@ -1,3 +1,4 @@
+import { getNotifications } from "./getNotifications.docs";
 import { getProduct } from "./getProduct.docs";
 import { getProducts } from "./getProducts.docs";
 import { getUser } from "./getUser.docs";
@@ -17,6 +18,9 @@ const apiDocumentation = {
     {
       name: "User",
     },
+    {
+      name: "Notifications"
+    }
   ],
   paths: {
     "/api/products": {
@@ -30,6 +34,9 @@ const apiDocumentation = {
     },
     "/api/user/info": {
       get: getUser,
+    },
+    "/api/notifications": {
+      get: getNotifications,
     },
   },
   components: {
