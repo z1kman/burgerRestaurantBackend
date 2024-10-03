@@ -27,6 +27,7 @@ export const login = async (req: Request, res: Response) => {
         "username",
         ["first_name", "firstName"],
         ["last_name", "lastName"],
+        'password',
         [sequelize.col("Wallet.points"), "points"],
       ],
       include: [

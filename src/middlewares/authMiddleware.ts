@@ -15,6 +15,7 @@ export const authMiddleware = (
   }
 
   try {
+    console.log('req.headers.authorization', req.headers.authorization)
     const token = req.headers.authorization.split(" ")[1];
     if (!token) {
       return handleError(res, { name: ErrorName.AUTH_FAILED });
