@@ -9,38 +9,41 @@ import { AuthRequest } from "../types";
 import { Wallet } from "../models/wallet";
 import { sequelize } from "../database";
 
-type UserDataResult = {
-    id: string,
-    username: string,
-    lastName: string,
-    firstName: string,
-    password?: string,
-    points: number
-}
+const getUserInfo = async (
+  username: string,
+  options?: { withPassword: boolean }
+): Promise<User> => {
+  const user = await User.findOne({
+    attributes: [
+      "id",
+      "username",
+      ["first_name", "firstName"],
+      ["last_name", "lastName"],
+      "password",
+      [sequelize.col("Wallet.points"), "points"],
+    ],
+    include: [
+      {
+        attributes: [],
+        model: Wallet,
+        required: false,
+      },
+    ],
+
+    where: { username: username },
+    raw: true,
+  });
+
+  if (!options?.withPassword) {
+    delete user.password;
+  }
+  return user;
+};
 
 export const login = async (req: Request, res: Response) => {
   try {
     const { username, password } = req.body;
-    const user = await User.findOne({
-      attributes: [
-        "id",
-        "username",
-        ["first_name", "firstName"],
-        ["last_name", "lastName"],
-        'password',
-        [sequelize.col("Wallet.points"), "points"],
-      ],
-      include: [
-        {
-          attributes: [],
-          model: Wallet,
-          required: false,
-        },
-      ],
-
-      where: { username: username },
-      raw: true,
-    });
+    const user = await getUserInfo(username, { withPassword: true });
     if (!user) {
       return handleError(res, { name: ErrorName.USER_NOT_FOUND });
     }
@@ -61,29 +64,10 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-
 export const getUser = async (req: AuthRequest, res: Response) => {
   try {
     const { user } = req;
-    const userData = await User.findOne({
-      attributes: [
-        "id",
-        "username",
-        ["first_name", "firstName"],
-        ["last_name", "lastName"],
-        [sequelize.col("Wallet.points"), "points"],
-      ],
-      include: [
-        {
-          attributes: [],
-          model: Wallet,
-          required: false,
-        },
-      ],
-
-      where: { username: user.username },
-      raw: true,
-    });
+    const userData = await getUserInfo(user.username);
 
     if (!userData) {
       return handleError(res, { name: ErrorName.USER_NOT_FOUND });
