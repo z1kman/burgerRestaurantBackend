@@ -2,8 +2,7 @@ import { AuthRequest } from "../types";
 import { handleError } from "../handlers/handleError";
 import { Response } from "express";
 import { ErrorName } from "../constants/errors";
-import { sequelize } from "../database";
-import { QueryTypes, Sequelize } from "sequelize";
+import { prisma } from "../database";
 
 export const getNotifications = async (req: AuthRequest, res: Response) => {
   const lang = req.query.lang;
@@ -13,25 +12,38 @@ export const getNotifications = async (req: AuthRequest, res: Response) => {
   }
 
   try {
-    const notifications = await sequelize.query(
-      `
-    SELECT 
-        n.id,
-        nt.description
-    FROM public.notification n
-    LEFT JOIN public.notification_translation nt
-	    on nt.notification_id = n.id
-    LEFT JOIN public.language lg
-	    on lg.id = nt.language_id
-    WHERE
-	lg.name = '${lang}'
-`,
-      {
-        type: QueryTypes.SELECT, // Указываем тип запроса
-      }
-    );
+    const notifications = await prisma.notification.findMany({
+      select: {
+        id: true,
+        notification_translation: {
+          select: {
+            description: true,
+            language: {
+              select: {
+                name: true,
+              },
+            },
+          },
+          where: {
+            language: {
+              name: lang as string,
+            },
+          },
+        },
+      },
+    });
 
-    res.json(notifications);
+    const flatNotifications = notifications
+      .map((notification) => {
+        return notification.notification_translation.map((translation) => ({
+          id: notification.id,
+          description: translation.description,
+          language: translation.language.name,
+        }));
+      })
+      .flat();
+
+    res.json(flatNotifications);
   } catch (err) {
     console.error("Error fetching notifications", err);
     handleError(res, { message: "Error fetching notifications" });

@@ -4,10 +4,8 @@ import { handleError } from "../handlers/handleError";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { config } from "../config";
-import { User } from "../models/user";
 import { AuthRequest } from "../types";
-import { Wallet } from "../models/wallet";
-import { prisma, sequelize } from "../database";
+import { prisma } from "../database";
 
 const getUserInfo = async (
   username: string,
