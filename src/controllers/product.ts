@@ -1,11 +1,7 @@
 import { Request, Response } from "express";
 import { ErrorName } from "../constants/errors";
-import { Product } from "../models/product";
-import { ProductType } from "../models/productType";
-import { ProductTranslation } from "../models/productTranslation";
-import { Language } from "../models/language";
 import { handleError } from "../handlers/handleError";
-import { sequelize } from "../database";
+import { prisma } from "../database";
 
 
 export const getProduct = async (req: Request, res: Response) => {
@@ -17,43 +13,48 @@ export const getProduct = async (req: Request, res: Response) => {
   }
 
   try {
-    const products = await Product.findOne({
-      attributes: [
-        "id",
-        "price",
-        ["image_url_full", "imageUrl"],
-        [sequelize.col("ProductType.type"), "type"],
-        [sequelize.col("ProductTranslations.name"), "name"],
-        [
-          sequelize.col("ProductTranslations.long_description"),
-          "longDescription",
-        ],
-        [sequelize.col("ProductTranslations.Language.name"), "language"],
-      ],
-      include: [
-        {
-          model: ProductType,
-          attributes: [],
-          required: true,
+    const product = await prisma.product.findUnique({
+      select: {
+        id: true,
+        price: true,
+        image_url_full: true,
+        product_type: {
+          select: {
+            type: true,
+          },
         },
-        {
-          model: ProductTranslation,
-          attributes: [],
-          include: [
-            {
-              model: Language,
-              required: true,
-              attributes: [],
-              where: { name: lang },
+        product_translation: {
+          where: {
+            language: {
+              name: lang,
             },
-          ],
+          },
+          select: {
+            name: true,
+            long_description: true,
+            language: {
+              select: {
+                name: true,
+              },
+            },
+          },
         },
-      ],
-      where: { id },
-      raw: true,
+      },
+      where: {
+        id: Number(id),
+      },
     });
 
-    res.json(products || {});
+    const flatProduct = {
+      id: product?.id,
+      price: product?.price.toNumber(),
+      imageUrl: product?.image_url_full,
+      type: product?.product_type?.type,
+      name: product?.product_translation[0]?.name,
+      longDescription: product?.product_translation[0]?.long_description,
+      language: product?.product_translation[0]?.language.name,
+    };
+    res.json(flatProduct);
   } catch (err) {
     console.error("Error fetching product", err);
     handleError(res, { message: "Error fetching product" });
