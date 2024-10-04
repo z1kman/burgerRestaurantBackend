@@ -1,11 +1,7 @@
 import { Request, Response } from "express";
 import { handleError } from "../handlers/handleError";
 import { ErrorName } from "../constants/errors";
-import { Product } from "../models/product";
-import { ProductTranslation } from "../models/productTranslation";
-import { Language } from "../models/language";
-import { sequelize } from "../database";
-import { ProductType } from "../models/productType";
+import { prisma } from "../database";
 
 export const getProducts = async (req: Request, res: Response) => {
   const lang = req.query.lang;
@@ -16,47 +12,48 @@ export const getProducts = async (req: Request, res: Response) => {
   }
 
   try {
-    const products = await Product.findAll({
-      attributes: [
-        "id",
-        "price",
-        ["image_url_small", "imageUrl"],
-        [sequelize.col("ProductType.type"), "type"],
-        [sequelize.col("ProductTranslations.name"), "name"],
-        [
-          sequelize.col("ProductTranslations.short_description"),
-          "shortDescription",
-        ],
-        [sequelize.col("ProductTranslations.Language.name"), "language"],
-      ],
-      include: [
-        {
-          model: ProductType,
-          attributes: [],
-          required: true,
-          where: type
-            ? {
-                type,
-              }
-            : null,
+    const products = await prisma.product.findMany({
+      where: { product_type: { type: type ? String(type) : undefined } },
+      select: {
+        id: true,
+        price: true,
+        image_url_small: true,
+        product_type: {
+          select: {
+            type: true,
+          },
         },
-        {
-          model: ProductTranslation,
-          attributes: [],
-          include: [
-            {
-              model: Language,
-              required: true,
-              attributes: [],
-              where: { name: lang },
+        product_translation: {
+          where: {
+            language: {
+              name: lang as string,
             },
-          ],
+          },
+          select: {
+            name: true,
+            short_description: true,
+            language: {
+              select: {
+                name: true,
+              },
+            },
+          },
         },
-      ],
-      raw: true,
+      },
     });
 
-    res.json(products);
+    // Преобразование результата в плоскую структуру
+    const flatProducts = products.map((product) => ({
+      id: product.id,
+      price: Number(product.price),
+      imageUrl: product.image_url_small,
+      type: product.product_type.type,
+      name: product.product_translation[0]?.name,
+      shortDescription: product.product_translation[0]?.short_description,
+      language: product.product_translation[0]?.language.name,
+    }));
+
+    res.json(flatProducts);
   } catch (err) {
     console.error("Error fetching products", err);
     handleError(res, { message: "Error fetching products" });

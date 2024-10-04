@@ -29,8 +29,8 @@ export const getUser = {
                   example: "Ivanov",
                 },
                 points: {
-                  type: "string",
-                  example: "10000.00",
+                  type: "number",
+                  example: 10000,
                 },
               },
             },

@@ -28,8 +28,8 @@ const getProducts = {
                   example: 1,
                 },
                 price: {
-                  type: "string",
-                  example: "2.55",
+                  type: "number",
+                  example: 2.55,
                 },
                 name: {
                   type: "string",
