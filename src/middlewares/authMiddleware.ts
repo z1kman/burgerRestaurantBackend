@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 import { handleError } from "../handlers/handleError";
 import jwt from "jsonwebtoken";
 import { config } from "../config";
@@ -15,7 +15,6 @@ export const authMiddleware = (
   }
 
   try {
-    console.log('req.headers.authorization', req.headers.authorization)
     const token = req.headers.authorization.split(" ")[1];
     if (!token) {
       return handleError(res, { name: ErrorName.AUTH_FAILED });
