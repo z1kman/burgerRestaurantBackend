@@ -1,0 +1,80 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["prismaSchemaFolder"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model language {
+  id                       Int                        @id @default(autoincrement())
+  name                     String                     @db.VarChar(5)
+  notification_translation notification_translation[]
+  product_translation      product_translation[]
+}
+
+model notification {
+  id                       Int                        @id @default(autoincrement())
+  name                     String                     @unique @db.VarChar(255)
+  notification_translation notification_translation[]
+}
+
+model notification_translation {
+  id              Int          @id @default(autoincrement())
+  notification_id Int
+  language_id     Int
+  description     String
+  language        language     @relation(fields: [language_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  notification    notification @relation(fields: [notification_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([notification_id, language_id])
+}
+
+model product {
+  id                  Int                   @id @default(autoincrement())
+  product_type_id     Int
+  default_name        String                @unique @db.VarChar(50)
+  price               Decimal               @db.Decimal(10, 2)
+  image_url_small     String?               @db.VarChar(255)
+  image_url_full      String?               @db.VarChar(255)
+  product_type        product_type          @relation(fields: [product_type_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  product_translation product_translation[]
+}
+
+model product_translation {
+  id                Int      @id @default(autoincrement())
+  product_id        Int
+  language_id       Int
+  name              String   @db.VarChar(255)
+  short_description String
+  long_description  String
+  language          language @relation(fields: [language_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  product           product  @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([product_id, language_id])
+}
+
+model product_type {
+  id         Int       @id @default(autoincrement())
+  type       String    @unique @db.VarChar(100)
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  product    product[]
+}
+
+model user {
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  username   String  @unique @db.VarChar(255)
+  firstName String  @db.VarChar(255)  @map("first_name")
+  lastName  String  @db.VarChar(255)  @map("last_name")
+  password   String
+  wallet     wallet?
+}
+
+model wallet {
+  id      Int     @id @default(autoincrement())
+  user_id String? @unique @db.Uuid
+  points  Decimal @default(0.00) @db.Decimal(10, 2)
+  user    user?   @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}

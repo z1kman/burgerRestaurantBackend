@@ -1,4 +1,5 @@
 import { config } from "../config";
+import { PrismaClient } from '@prisma/client';
 
 const { Sequelize } = require("sequelize");
 
@@ -16,3 +17,6 @@ export const sequelize = new Sequelize(
     },
   }
 );
+
+
+export const prisma = new PrismaClient();

@@ -7,37 +7,39 @@ import { config } from "../config";
 import { User } from "../models/user";
 import { AuthRequest } from "../types";
 import { Wallet } from "../models/wallet";
-import { sequelize } from "../database";
+import { prisma, sequelize } from "../database";
 
 const getUserInfo = async (
   username: string,
   options?: { withPassword: boolean }
-): Promise<User> => {
-  const user = await User.findOne({
-    attributes: [
-      "id",
-      "username",
-      ["first_name", "firstName"],
-      ["last_name", "lastName"],
-      "password",
-      [sequelize.col("Wallet.points"), "points"],
-    ],
-    include: [
-      {
-        attributes: [],
-        model: Wallet,
-        required: false,
+) => {
+  const user = await prisma.user.findFirst({
+    select: {
+      id: true,
+      username: true,
+      firstName: true,
+      lastName: true,
+      password: true,
+      wallet: {
+        select: {
+          points: true,
+        },
       },
-    ],
-
-    where: { username: username },
-    raw: true,
+    },
+    where: {
+      username: username,
+    },
   });
+  const transformedData = {
+    ...user,
+    points: user.wallet.points.toNumber(),
+  };
+  delete transformedData.wallet;
 
   if (!options?.withPassword) {
-    delete user.password;
+    delete transformedData.password;
   }
-  return user;
+  return transformedData;
 };
 
 export const login = async (req: Request, res: Response) => {
