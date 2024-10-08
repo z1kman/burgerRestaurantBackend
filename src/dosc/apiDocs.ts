@@ -1,3 +1,4 @@
+import { basketCalculate } from "./basketCalculate";
 import { getNotifications } from "./getNotifications.docs";
 import { getProduct } from "./getProduct.docs";
 import { getProducts } from "./getProducts.docs";
@@ -19,8 +20,11 @@ const apiDocumentation = {
       name: "User",
     },
     {
-      name: "Notifications"
-    }
+      name: "Notifications",
+    },
+    {
+      name: "Basket",
+    },
   ],
   paths: {
     "/api/products": {
@@ -37,6 +41,9 @@ const apiDocumentation = {
     },
     "/api/notifications": {
       get: getNotifications,
+    },
+    "/api/basket/calculate": {
+      post: basketCalculate,
     },
   },
   components: {

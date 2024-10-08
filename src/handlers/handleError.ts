@@ -18,8 +18,8 @@ export function handleError(res: Response, err: ErrorType) {
     [ErrorName.USER_NOT_FOUND, ErrorName.WRONG_PASSWORD].includes(errorName)
   ) {
     res.status(400).send({ ...baseBody, message: "Auth failed" });
-  } else if ([ErrorName.NO_DATA].includes(errorName)) {
-    res.status(400).send({ ...baseBody, message: "data is required" });
+  } else if ([ErrorName.NO_BODY].includes(errorName)) {
+    res.status(400).send({ ...baseBody, message: "body is required" });
   } else {
     res.status(500).send({ ...baseBody, message: err.message });
   }

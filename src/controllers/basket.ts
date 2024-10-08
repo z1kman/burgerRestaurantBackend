@@ -2,17 +2,13 @@ import { OptionalAuthRequest } from "../types";
 import { handleError } from "../handlers/handleError";
 import { Response } from "express";
 import { ErrorName } from "../constants/errors";
-import { prisma } from "../database";
-import { getUser, getUserInfo } from "./auth";
+import { getUserInfo } from "./auth";
 import { getRawProductsData } from "./products";
 
 type DataItem = { productId: number; quantity: number };
-interface Body {
-  data: DataItem[];
-}
 
 interface CalculateRequest extends OptionalAuthRequest {
-  body: Body;
+  body: DataItem[];
 }
 
 export const calculate = async (req: CalculateRequest, res: Response) => {
@@ -21,13 +17,13 @@ export const calculate = async (req: CalculateRequest, res: Response) => {
   if (!lang) {
     return handleError(res, { name: ErrorName.NO_LANGUAGE_ATTRIBUTE });
   }
-  const { data } = req.body;
+  const body = req.body;
 
-  if (!data && !Array.isArray(data)) {
-    return handleError(res, { name: ErrorName.NO_DATA });
+  if (!body && !Array.isArray(body)) {
+    return handleError(res, { name: ErrorName.NO_BODY });
   }
 
-  const dataMap = getDataMap(data);
+  const dataMap = getDataMap(body);
 
   try {
     const products = await getRawProductsData({
