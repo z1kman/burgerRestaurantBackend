@@ -4,6 +4,7 @@ import { Response } from "express";
 import { ErrorName } from "../constants/errors";
 import { prisma } from "../database";
 import { getUser, getUserInfo } from "./auth";
+import { getRawProductsData } from "./products";
 
 type DataItem = { productId: number; quantity: number };
 interface Body {
@@ -15,7 +16,7 @@ interface CalculateRequest extends OptionalAuthRequest {
 }
 
 export const calculate = async (req: CalculateRequest, res: Response) => {
-  const lang = req.query.lang;
+  const lang = req.query.lang as string;
 
   if (!lang) {
     return handleError(res, { name: ErrorName.NO_LANGUAGE_ATTRIBUTE });
@@ -29,38 +30,9 @@ export const calculate = async (req: CalculateRequest, res: Response) => {
   const dataMap = getDataMap(data);
 
   try {
-    const products = await prisma.product.findMany({
-      where: {
-        id: {
-          in: Array.from(dataMap.keys()),
-        },
-      },
-      select: {
-        id: true,
-        price: true,
-        image_url_small: true,
-        product_type: {
-          select: {
-            type: true,
-          },
-        },
-        product_translation: {
-          where: {
-            language: {
-              name: lang as string,
-            },
-          },
-          select: {
-            name: true,
-            short_description: true,
-            language: {
-              select: {
-                name: true,
-              },
-            },
-          },
-        },
-      },
+    const products = await getRawProductsData({
+      lang,
+      ids: Array.from(dataMap.keys()),
     });
     const user = req?.user?.username
       ? await getUserInfo(req.user.username)
