@@ -7,7 +7,7 @@ import { config } from "../config";
 import { AuthRequest } from "../types";
 import { prisma } from "../database";
 
-const getUserInfo = async (
+export const getUserInfo = async (
   username: string,
   options?: { withPassword: boolean }
 ) => {

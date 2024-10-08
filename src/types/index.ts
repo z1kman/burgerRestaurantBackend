@@ -14,3 +14,7 @@ export interface JwtPayload {
 export interface AuthRequest extends Request {
   user: JwtPayload;
 }
+
+export interface OptionalAuthRequest extends Request {
+  user?: JwtPayload;
+}

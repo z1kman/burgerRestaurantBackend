@@ -42,7 +42,6 @@ export const getProducts = async (req: Request, res: Response) => {
       },
     });
 
-    // Преобразование результата в плоскую структуру
     const flatProducts = products.map((product) => ({
       id: product.id,
       price: Number(product.price),
