@@ -3,7 +3,7 @@ export const basketCalculate = {
   summary:
     "Calculate the contents of basket. The route accepts both authorized and unauthorized requests",
   description:
-    "Сalculates the contents of basket based on the passed request body. Authorization is required to load the user's points data",
+    "Calculates the contents of basket based on the passed request body. Authorization is required to load the user's points data",
   security: [{ bearerAuth: {} }, {}],
   parameters: [
     {
