@@ -3,7 +3,7 @@ import { handleError } from "../handlers/handleError";
 import { Response } from "express";
 import { ErrorName } from "../constants/errors";
 import { prisma } from "../database";
-import { getUser, getUserInfo } from "./authController";
+import { getUser, getUserInfo } from "./auth";
 
 type DataItem = { productId: number; quantity: number };
 interface Body {
