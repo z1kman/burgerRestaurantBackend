@@ -1,14 +1,14 @@
 import { AuthRequest } from "../types";
-import { handleError } from "../handlers/handleError";
-import { Response } from "express";
+import { NextFunction, Response } from "express";
 import { ErrorName } from "../constants/errors";
 import { prisma } from "../database";
+import { AppError } from "../classes/AppError";
 
-export const getNotifications = async (req: AuthRequest, res: Response) => {
+export const getNotifications = async (req: AuthRequest, res: Response, next: NextFunction) => {
   const lang = req.query.lang;
 
   if (!lang) {
-    handleError(res, { name: ErrorName.NO_LANGUAGE_ATTRIBUTE });
+    return next(new AppError({ name: ErrorName.NO_LANGUAGE_ATTRIBUTE }));
   }
 
   try {
@@ -46,6 +46,6 @@ export const getNotifications = async (req: AuthRequest, res: Response) => {
     res.json(flatNotifications);
   } catch (err) {
     console.error("Error fetching notifications", err);
-    handleError(res, { message: "Error fetching notifications" });
+    return next(new AppError({ message: "Error fetching notifications" }));
   }
 };

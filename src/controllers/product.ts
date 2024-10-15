@@ -1,15 +1,15 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { ErrorName } from "../constants/errors";
-import { handleError } from "../handlers/handleError";
 import { prisma } from "../database";
+import { AppError } from "../classes/AppError";
 
 
-export const getProduct = async (req: Request, res: Response) => {
+export const getProduct = async (req: Request, res: Response, next: NextFunction) => {
   const lang = req.query.lang as string;
   const { id } = req.params;
 
   if (!lang) {
-    handleError(res, { name: ErrorName.NO_LANGUAGE_ATTRIBUTE });
+    return next(new AppError({ name: ErrorName.NO_LANGUAGE_ATTRIBUTE }));
   }
 
   try {
@@ -57,6 +57,6 @@ export const getProduct = async (req: Request, res: Response) => {
     res.json(flatProduct);
   } catch (err) {
     console.error("Error fetching product", err);
-    handleError(res, { message: "Error fetching product" });
+    return next(new AppError({ message: "Error fetching product" }))
   }
 };

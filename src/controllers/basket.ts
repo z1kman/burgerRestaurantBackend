@@ -1,11 +1,11 @@
 import { OptionalAuthRequest } from "../types";
-import { handleError } from "../handlers/handleError";
-import { Response } from "express";
+import { NextFunction, Response } from "express";
 import { ErrorName } from "../constants/errors";
 import { getUserInfo } from "./auth";
 import { getRawProductsData } from "./products";
 import { Prisma } from "@prisma/client";
 import { prisma } from "../database";
+import { AppError } from "../classes/AppError";
 
 type DataItem = { productId: number; quantity: number };
 
@@ -29,16 +29,20 @@ type ProductPayload = {
   image_url_small: string;
 };
 
-export const calculate = async (req: CalculateRequest, res: Response) => {
+export const calculate = async (
+  req: CalculateRequest,
+  res: Response,
+  next: NextFunction
+) => {
   const lang = req.query.lang as string;
 
   if (!lang) {
-    return handleError(res, { name: ErrorName.NO_LANGUAGE_ATTRIBUTE });
+    return next(new AppError({ name: ErrorName.NO_LANGUAGE_ATTRIBUTE }));
   }
   const body = req.body;
 
   if (!body && !Array.isArray(body)) {
-    return handleError(res, { name: ErrorName.NO_BODY });
+    return next(new AppError({ name: ErrorName.NO_BODY }));
   }
 
   try {
@@ -59,15 +63,19 @@ export const calculate = async (req: CalculateRequest, res: Response) => {
     });
   } catch (err) {
     console.error("Error fetching basket", err);
-    handleError(res, { message: "Error fetching basket" });
+    return next(new AppError({ message: "Error fetching basket" }));
   }
 };
 
-export const order = async (req: CalculateRequest, res: Response) => {
+export const order = async (
+  req: CalculateRequest,
+  res: Response,
+  next: NextFunction
+) => {
   const body = req.body;
 
   if (!body && !Array.isArray(body)) {
-    return handleError(res, { name: ErrorName.NO_BODY });
+    throw new AppError({ name: ErrorName.NO_BODY });
   }
 
   try {
@@ -113,7 +121,7 @@ export const order = async (req: CalculateRequest, res: Response) => {
     }
   } catch (err) {
     console.error("Error fetching basket", err);
-    handleError(res, { message: "Error fetching basket" });
+    return next(new AppError({ message: "Error fetching basket" }));
   }
 };
 

@@ -1,9 +1,9 @@
 import { NextFunction, Response } from "express";
-import { handleError } from "../handlers/handleError";
 import jwt from "jsonwebtoken";
 import { config } from "../config";
 import { AuthRequest, JwtPayload } from "../types";
 import { ErrorName } from "../constants/errors";
+import { AppError } from "../classes/AppError";
 
 export const authMiddleware = (
   req: AuthRequest,
@@ -17,7 +17,7 @@ export const authMiddleware = (
   try {
     const token = req.headers.authorization.split(" ")[1];
     if (!token) {
-      return handleError(res, { name: ErrorName.AUTH_FAILED });
+      return next(new AppError({  name: ErrorName.AUTH_FAILED }))
     }
     const decodedData = jwt.verify(
       token,
@@ -28,6 +28,6 @@ export const authMiddleware = (
     return next();
   } catch (e) {
     console.log(e);
-    return handleError(res, { name: ErrorName.AUTH_FAILED });
+    return next(new AppError({  name: ErrorName.AUTH_FAILED }))
   }
 };

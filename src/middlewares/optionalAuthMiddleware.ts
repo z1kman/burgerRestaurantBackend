@@ -1,9 +1,9 @@
 import { NextFunction, Response } from "express";
-import { handleError } from "../handlers/handleError";
 import jwt from "jsonwebtoken";
 import { config } from "../config";
 import { AuthRequest, JwtPayload } from "../types";
 import { ErrorName } from "../constants/errors";
+import { AppError } from "../classes/AppError";
 
 export const optionalAuthMiddleware = (
   req: AuthRequest,
@@ -33,6 +33,6 @@ export const optionalAuthMiddleware = (
     return next();
   } catch (e) {
     console.log(e);
-    return handleError(res, { name: ErrorName.AUTH_FAILED });
+    return next(new AppError({  name: ErrorName.AUTH_FAILED }))
   }
 };

@@ -1,7 +1,7 @@
-import { Request, Response } from "express";
-import { handleError } from "../handlers/handleError";
+import { NextFunction, Request, Response } from "express";
 import { ErrorName } from "../constants/errors";
 import { prisma } from "../database";
+import { AppError } from "../classes/AppError";
 
 type GetProductsData = {
   lang?: string;
@@ -54,12 +54,12 @@ export const getRawProductsData = async ({
   return products;
 };
 
-export const getProducts = async (req: Request, res: Response) => {
+export const getProducts = async (req: Request, res: Response, next: NextFunction) => {
   const lang = req.query.lang as string;
   const type = req.query.type as string;
 
   if (!lang) {
-    handleError(res, { name: ErrorName.NO_LANGUAGE_ATTRIBUTE });
+    return next(new AppError({ name: ErrorName.NO_LANGUAGE_ATTRIBUTE }));
   }
 
   try {
@@ -77,6 +77,6 @@ export const getProducts = async (req: Request, res: Response) => {
     res.json(flatProducts);
   } catch (err) {
     console.error("Error fetching products", err);
-    handleError(res, { message: "Error fetching products" });
+    return next(new AppError({ message: "Error fetching products" }));
   }
 };

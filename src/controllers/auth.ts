@@ -1,11 +1,11 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { ErrorName } from "../constants/errors";
-import { handleError } from "../handlers/handleError";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { config } from "../config";
 import { AuthRequest } from "../types";
 import { prisma } from "../database";
+import { AppError } from "../classes/AppError";
 
 export const getUserInfo = async (
   username: string,
@@ -40,16 +40,20 @@ export const getUserInfo = async (
   return transformedData;
 };
 
-export const login = async (req: Request, res: Response) => {
+export const login = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { username, password } = req.body;
     const user = await getUserInfo(username, { withPassword: true });
     if (!user) {
-      return handleError(res, { name: ErrorName.USER_NOT_FOUND });
+      return next(new AppError({ name: ErrorName.USER_NOT_FOUND }));
     }
     const validPassword = bcrypt.compareSync(password, user.password);
     if (!validPassword) {
-      return handleError(res, { name: ErrorName.WRONG_PASSWORD });
+      return next(new AppError({ name: ErrorName.WRONG_PASSWORD }));
     }
     const token = jwt.sign(
       { id: user.id, username: user.username },
@@ -60,17 +64,17 @@ export const login = async (req: Request, res: Response) => {
     res.json({ ...user, token });
   } catch (err) {
     console.error(err);
-    handleError(res, { message: "Error during login" });
+    return next(new AppError({ message: "Error during login" }));
   }
 };
 
-export const getUser = async (req: AuthRequest, res: Response) => {
+export const getUser = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const { user } = req;
     const userData = await getUserInfo(user.username);
 
     if (!userData) {
-      return handleError(res, { name: ErrorName.USER_NOT_FOUND });
+      return next(new AppError({ name: ErrorName.USER_NOT_FOUND }));
     }
 
     res.json(userData);
