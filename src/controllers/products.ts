@@ -4,7 +4,7 @@ import { ErrorName } from "../constants/errors";
 import { prisma } from "../database";
 
 type GetProductsData = {
-  lang: string;
+  lang?: string;
   type?: string;
   ids?: number[];
 };
