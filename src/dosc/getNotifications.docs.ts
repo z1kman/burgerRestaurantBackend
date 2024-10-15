@@ -1,6 +1,7 @@
 export const getNotifications = {
   tags: ["Notifications"],
-  description: "Get all notification",
+  summary: "Get all notification for user",
+  description: "Get all notification for user",
   security: [{ bearerAuth: {} as any }],
   parameters: [
     {

@@ -1,5 +1,7 @@
 export const login = {
   tags: ["User"],
+  description: "Authorize user by login data",
+  summary: "Authorize user by login data",
   requestBody: {
     required: true,
     content: {

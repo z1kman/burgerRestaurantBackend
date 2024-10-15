@@ -1,6 +1,7 @@
 export const getUser = {
   tags: ["User"],
-  description: "Get user information",
+  description: "Get information on the currently authorized user",
+  summary: "Get user information",
   security: [{ bearerAuth: {} as any }],
   responses: {
     "200": {

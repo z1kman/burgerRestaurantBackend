@@ -1,6 +1,7 @@
 const getProducts = {
   tags: ["Products"],
   description: "Get all the restaurant's products",
+  summary: "Get all the restaurant's products",
   parameters: [
     {
       in: "query",
