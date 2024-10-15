@@ -70,6 +70,10 @@ export const basketCalculate = {
                       type: "number",
                       example: 2.55,
                     },
+                    totalPrice: {
+                      type: "number",
+                      example: 12.75,
+                    },
                     name: {
                       type: "string",
                       example: "Сheeseburger",

@@ -23,9 +23,9 @@ export const calculate = async (req: CalculateRequest, res: Response) => {
     return handleError(res, { name: ErrorName.NO_BODY });
   }
 
-  const dataMap = getDataMap(body);
 
   try {
+    const dataMap = getDataMap(body);
     const products = await getRawProductsData({
       lang,
       ids: Array.from(dataMap.keys()),
@@ -37,17 +37,20 @@ export const calculate = async (req: CalculateRequest, res: Response) => {
     const flatProducts = [];
     let finalPrice = 0;
     for (const item of products) {
+      const quantity = dataMap.get(item.id) || 0;
+      const itemPrice = parseFloat((quantity * Number(item.price)).toFixed(2));
       const flatProduct = {
         id: item.id,
         price: Number(item.price),
+        totalPrice: itemPrice,
         imageUrl: item.image_url_small,
         type: item.product_type.type,
         name: item.product_translation[0]?.name,
         shortDescription: item.product_translation[0]?.short_description,
         language: item.product_translation[0]?.language.name,
       };
-      const quantity = dataMap.get(flatProduct.id) || 0;
-      finalPrice += quantity * flatProduct.price;
+
+      finalPrice += itemPrice;
       flatProducts.push(flatProduct);
     }
 
