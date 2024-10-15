@@ -1,4 +1,5 @@
 import { basketCalculate } from "./basketCalculate";
+import { basketOrder } from "./basketOrder";
 import { getNotifications } from "./getNotifications.docs";
 import { getProduct } from "./getProduct.docs";
 import { getProducts } from "./getProducts.docs";
@@ -45,6 +46,10 @@ const apiDocumentation = {
     "/api/basket/calculate": {
       post: basketCalculate,
     },
+    "/api/basket/order": {
+      post: basketOrder,
+    },
+    
   },
   components: {
     securitySchemes: {

@@ -12,6 +12,10 @@ type DataItem = { productId: number; quantity: number };
 interface CalculateRequest extends OptionalAuthRequest {
   body: DataItem[];
 }
+interface OrderRequest extends OptionalAuthRequest {
+  paymentMethod: "points" | "cash";
+  basket: DataItem[];
+}
 
 type ProductPayload = {
   id: number;
@@ -68,18 +72,19 @@ export const calculate = async (
 };
 
 export const order = async (
-  req: CalculateRequest,
+  req: OrderRequest,
   res: Response,
   next: NextFunction
 ) => {
   const body = req.body;
 
-  if (!body && !Array.isArray(body)) {
-    throw new AppError({ name: ErrorName.NO_BODY });
+  if (!body || !Array.isArray(body.basket) || !body.paymentMethod) {
+    return next(new AppError({ name: ErrorName.NO_BODY }));
   }
 
   try {
-    const dataMap = getDataMap(body);
+    const paymentMethod = body.paymentMethod;
+    const dataMap = getDataMap(body.basket);
     const products = await getRawProductsData({
       ids: Array.from(dataMap.keys()),
     });
@@ -92,11 +97,15 @@ export const order = async (
     const points = user?.points ?? 0;
     const newPointsValue = parseFloat((points - finalPrice).toFixed(2));
 
-    if (!user) {
+    if (paymentMethod === "cash") {
       res.status(200).json({
         success: true,
       });
       return;
+    }
+
+    if (!user && paymentMethod === "points") {
+      return next(new AppError({ name: ErrorName.AUTH_FAILED }));
     }
 
     if (newPointsValue < 0) {
@@ -120,8 +129,8 @@ export const order = async (
       });
     }
   } catch (err) {
-    console.error("Error fetching basket", err);
-    return next(new AppError({ message: "Error fetching basket" }));
+    console.error("Error during order basket", err);
+    return next(new AppError({ message: "Error during order basket" }));
   }
 };
 
