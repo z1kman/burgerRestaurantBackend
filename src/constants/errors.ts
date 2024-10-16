@@ -5,4 +5,5 @@ export enum ErrorName {
   USER_NOT_FOUND = "user not found",
   WRONG_PASSWORD = "wrong password",
   AUTH_FAILED = "auth failed",
+  INSUFFICIENT_FUNDS = "insufficient funds"
 }

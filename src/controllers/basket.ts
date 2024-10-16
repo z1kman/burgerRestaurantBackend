@@ -109,25 +109,22 @@ export const order = async (
     }
 
     if (newPointsValue < 0) {
-      res.status(402).json({
-        message: "Insufficient funds on the account",
-        success: false,
-      });
-    } else {
-      await prisma.wallet.update({
-        where: {
-          user_id: user.id,
-        },
-        data: {
-          points: newPointsValue,
-        },
-      });
-
-      res.json({
-        success: true,
-        points: newPointsValue,
-      });
+      return next(new AppError({ name: ErrorName.INSUFFICIENT_FUNDS }));
     }
+    
+    await prisma.wallet.update({
+      where: {
+        user_id: user.id,
+      },
+      data: {
+        points: newPointsValue,
+      },
+    });
+
+    res.json({
+      success: true,
+      points: newPointsValue,
+    });
   } catch (err) {
     console.error("Error during order basket", err);
     return next(new AppError({ message: "Error during order basket" }));

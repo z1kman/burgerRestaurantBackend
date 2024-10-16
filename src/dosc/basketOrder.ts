@@ -98,8 +98,30 @@ export const basketOrder = {
         },
       },
     },
+    "402 ": {
+      description:
+        "Insufficient funds on the account. The number of points is not enough for payment",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              success: {
+                type: "bool",
+                example: false,
+              },
+              message: {
+                type: "string",
+                example: "Insufficient funds on the account",
+              },
+            },
+          },
+        },
+      },
+    },
     "403 ": {
-      description: "Auth failed. If payment method = points but user is not authorized",
+      description:
+        "Auth failed. If payment method = points but user is not authorized",
       content: {
         "application/json": {
           schema: {
