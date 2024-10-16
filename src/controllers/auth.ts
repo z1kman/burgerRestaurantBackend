@@ -47,6 +47,11 @@ export const login = async (
 ) => {
   try {
     const { username, password } = req.body;
+
+    if (!username || !password) {
+      return next(new AppError({ name: ErrorName.USER_NOT_FOUND }));
+    }
+
     const user = await getUserInfo(username, { withPassword: true });
     if (!user) {
       return next(new AppError({ name: ErrorName.USER_NOT_FOUND }));
