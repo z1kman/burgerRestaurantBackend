@@ -3,8 +3,11 @@ import { ErrorName } from "../constants/errors";
 import { prisma } from "../database";
 import { AppError } from "../classes/AppError";
 
-
-export const getProduct = async (req: Request, res: Response, next: NextFunction) => {
+export const getProduct = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const lang = req.query.lang as string;
   const { id } = req.params;
 
@@ -14,6 +17,16 @@ export const getProduct = async (req: Request, res: Response, next: NextFunction
 
   try {
     const product = await prisma.product.findUnique({
+      where: {
+        id: Number(id),
+        product_translation: {
+          some: {
+            language: {
+              name: lang,
+            },
+          },
+        },
+      },
       select: {
         id: true,
         price: true,
@@ -40,9 +53,6 @@ export const getProduct = async (req: Request, res: Response, next: NextFunction
           },
         },
       },
-      where: {
-        id: Number(id),
-      },
     });
 
     const flatProduct = {
@@ -57,6 +67,6 @@ export const getProduct = async (req: Request, res: Response, next: NextFunction
     res.json(flatProduct);
   } catch (err) {
     console.error("Error fetching product", err);
-    return next(new AppError({ message: "Error fetching product" }))
+    return next(new AppError({ message: "Error fetching product" }));
   }
 };

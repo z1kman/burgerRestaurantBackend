@@ -17,6 +17,7 @@ export const getRawProductsData = async ({
   const products = await prisma.product.findMany({
     where: {
       product_type: { type: type ? type : undefined },
+      product_translation : { some: {language: { name: lang}}},
       id: ids
         ? {
             in: ids,
