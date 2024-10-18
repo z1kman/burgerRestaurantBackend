@@ -13,6 +13,9 @@ export const getNotifications = async (req: AuthRequest, res: Response, next: Ne
 
   try {
     const notifications = await prisma.notification.findMany({
+      orderBy: {
+        id: 'desc',
+      },
       select: {
         id: true,
         notification_translation: {

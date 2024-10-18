@@ -24,6 +24,9 @@ export const getRawProductsData = async ({
           }
         : undefined,
     },
+    orderBy: {
+      id: 'asc',
+    },
     select: {
       id: true,
       price: true,
