@@ -44,12 +44,22 @@ export class AppError extends Error {
         status: 400,
         message: "Missing required attribute: 'lang'",
       };
+    } else if ([ErrorName.WRONG_LANGUAGE_ATTRIBUTE].includes(errorName)) {
+      return {
+        ...baseBody,
+        status: 400,
+        message: "Wrong attribute: 'lang'",
+      };
     } else if ([ErrorName.NO_ID].includes(errorName)) {
       return { ...baseBody, statue: 400, message: "ID parameter required" };
     } else if ([ErrorName.NO_BODY].includes(errorName)) {
       return { ...baseBody, status: 400, message: "Body is required" };
     } else if ([ErrorName.INSUFFICIENT_FUNDS].includes(errorName)) {
-      return { ...baseBody, status: 402, message: "Insufficient funds on the account" };
+      return {
+        ...baseBody,
+        status: 402,
+        message: "Insufficient funds on the account",
+      };
     } else {
       return { ...baseBody };
     }

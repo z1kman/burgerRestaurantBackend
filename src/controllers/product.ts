@@ -1,21 +1,17 @@
-import { NextFunction, Request, Response } from "express";
-import { ErrorName } from "../constants/errors";
+import { NextFunction, Response } from "express";
 import { prisma } from "../database";
 import { AppError } from "../classes/AppError";
+import { CustomRequest } from "../types";
 
 export const getProduct = async (
-  req: Request,
+  req: CustomRequest,
   res: Response,
   next: NextFunction
 ) => {
-  const lang = req.query.lang as string;
-  const { id } = req.params;
-
-  if (!lang) {
-    return next(new AppError({ name: ErrorName.NO_LANGUAGE_ATTRIBUTE }));
-  }
-
   try {
+    const lang = req.lang;
+    const { id } = req.params;
+
     const product = await prisma.product.findUnique({
       where: {
         id: Number(id),

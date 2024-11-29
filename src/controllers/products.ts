@@ -1,7 +1,7 @@
-import { NextFunction, Request, Response } from "express";
-import { ErrorName } from "../constants/errors";
+import { NextFunction, Response } from "express";
 import { prisma } from "../database";
 import { AppError } from "../classes/AppError";
+import { CustomRequest } from "index";
 
 type GetProductsData = {
   lang?: string;
@@ -17,7 +17,7 @@ export const getRawProductsData = async ({
   const products = await prisma.product.findMany({
     where: {
       product_type: { type: type ? type : undefined },
-      product_translation : { some: {language: { name: lang}}},
+      product_translation: { some: { language: { name: lang } } },
       id: ids
         ? {
             in: ids,
@@ -25,7 +25,7 @@ export const getRawProductsData = async ({
         : undefined,
     },
     orderBy: {
-      id: 'asc',
+      id: "asc",
     },
     select: {
       id: true,
@@ -58,15 +58,15 @@ export const getRawProductsData = async ({
   return products;
 };
 
-export const getProducts = async (req: Request, res: Response, next: NextFunction) => {
-  const lang = req.query.lang as string;
-  const type = req.query.type as string;
-
-  if (!lang) {
-    return next(new AppError({ name: ErrorName.NO_LANGUAGE_ATTRIBUTE }));
-  }
-
+export const getProducts = async (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
   try {
+    const lang = req.lang;
+    const type = req.query.type as string;
+
     const products = await getRawProductsData({ lang, type });
     const flatProducts = products.map((product) => ({
       id: product.id,

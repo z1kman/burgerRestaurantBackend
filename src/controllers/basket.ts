@@ -38,11 +38,6 @@ export const calculate = async (
   res: Response,
   next: NextFunction
 ) => {
-  const lang = req.query.lang as string;
-
-  if (!lang) {
-    return next(new AppError({ name: ErrorName.NO_LANGUAGE_ATTRIBUTE }));
-  }
   const body = req.body;
 
   if (!body && !Array.isArray(body)) {
@@ -50,6 +45,7 @@ export const calculate = async (
   }
 
   try {
+    const lang = req.lang;
     const dataMap = getDataMap(body);
     const products = await getRawProductsData({
       lang,
@@ -111,7 +107,7 @@ export const order = async (
     if (newPointsValue < 0) {
       return next(new AppError({ name: ErrorName.INSUFFICIENT_FUNDS }));
     }
-    
+
     await prisma.wallet.update({
       where: {
         user_id: user.id,

@@ -1,5 +1,6 @@
 export enum ErrorName {
   NO_LANGUAGE_ATTRIBUTE = "no language attribute",
+  WRONG_LANGUAGE_ATTRIBUTE = "wrong language attribute",
   NO_ID = "no id param",
   NO_BODY = "no data in body",
   USER_NOT_FOUND = "user not found",

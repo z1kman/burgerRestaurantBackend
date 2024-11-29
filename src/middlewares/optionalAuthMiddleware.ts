@@ -33,6 +33,6 @@ export const optionalAuthMiddleware = (
     return next();
   } catch (e) {
     console.log(e);
-    return next(new AppError({  name: ErrorName.AUTH_FAILED }))
+    return next(new AppError({ name: ErrorName.AUTH_FAILED }));
   }
 };

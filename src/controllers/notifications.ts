@@ -1,17 +1,11 @@
 import { AuthRequest } from "../types";
 import { NextFunction, Response } from "express";
-import { ErrorName } from "../constants/errors";
 import { prisma } from "../database";
 import { AppError } from "../classes/AppError";
 
 export const getNotifications = async (req: AuthRequest, res: Response, next: NextFunction) => {
-  const lang = req.query.lang;
-
-  if (!lang) {
-    return next(new AppError({ name: ErrorName.NO_LANGUAGE_ATTRIBUTE }));
-  }
-
   try {
+    const lang = req.lang;
     const notifications = await prisma.notification.findMany({
       orderBy: {
         id: 'desc',

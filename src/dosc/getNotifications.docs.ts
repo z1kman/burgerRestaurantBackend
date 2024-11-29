@@ -7,7 +7,7 @@ export const getNotifications = {
     {
       in: "query",
       name: "lang",
-      required: true,
+      required: false,
       description: "Response language (ru - Russian, en - English) ",
       schema: {
         type: "string",
