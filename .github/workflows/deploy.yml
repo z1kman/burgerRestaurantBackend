@@ -34,15 +34,14 @@ jobs:
           echo "DATABASE_URL=$DATABASE_URL" >> .env
           echo "SECRET_AUTH_TOKEN=$SECRET_AUTH_TOKEN" >> .env
 
-      - name: Build app
+      - name: Install deps
         run: |
           npm install
-          npm run build
-
-     - name: Install deps for swagger
-        run: |
           cd swagger
           npm install
+
+      - name: Build app
+        run: npm run build
 
       - name: Add SSH key
         uses: webfactory/ssh-agent@v0.9.0
