@@ -1,0 +1,52 @@
+- name: Deploy build
+  hosts: web1
+  become: yes
+  vars:
+    domain_name: "{{ lookup('env','DOMAIN_NAME') }}"
+    local_build_path: "{{ playbook_dir }}/../dist"
+    local_temp_build_path: "/tmp/build.tar.gz"
+    server_build_path: "/var/www/{{ domain_name }}"
+    server_temp_archive: "{{ server_build_path }}/build.tar.gz"
+    # secret_auth_token: "{{ lookup('env','SECRET_AUTH_TOKEN') }}"
+    # database_url: "{{ lookup('env','DATABASE_URL') }}"
+
+  tasks:
+    - name: Create archive from build contents on runner
+      community.general.archive:
+        path: "{{ local_build_path }}/*"
+        dest: "{{ local_temp_build_path }}"
+      delegate_to: localhost
+
+    - name: Ensure server build path exists
+      file:
+        path: "{{ server_build_path }}"
+        state: directory
+        mode: "0755"
+
+    - name: Copy archive to server
+      copy:
+        src: "{{ local_temp_build_path }}"
+        dest: "{{ server_temp_archive }}"
+
+    - name: Extract archive on server
+      unarchive:
+        src: "{{ server_temp_archive }}"
+        dest: "{{ server_build_path }}"
+        remote_src: yes
+
+    - name: Remove archive from runner
+      file:
+        path: "{{ local_temp_build_path }}"
+        state: absent
+      delegate_to: localhost
+
+    - name: Remove archive from server
+      file:
+        path: "{{ server_temp_archive }}"
+        state: absent
+
+    # - name: Create .env file
+    #   template:
+    #     src: .env.j2
+    #     dest: "{{ server_build_path }}/.env"
+
