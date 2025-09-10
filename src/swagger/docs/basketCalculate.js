@@ -1,4 +1,4 @@
-export const basketCalculate = {
+const basketCalculate = {
   tags: ["Basket"],
   summary:
     "Calculate the contents of basket. The route accepts both authorized and unauthorized requests",
@@ -141,3 +141,5 @@ export const basketCalculate = {
     },
   },
 };
+
+module.exports = { basketCalculate }

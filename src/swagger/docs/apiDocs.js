@@ -1,10 +1,10 @@
-import { basketCalculate } from "./basketCalculate";
-import { basketOrder } from "./basketOrder";
-import { getNotifications } from "./getNotifications.docs";
-import { getProduct } from "./getProduct.docs";
-import { getProducts } from "./getProducts.docs";
-import { getUser } from "./getUser.docs";
-import { login } from "./login.docs";
+const { basketCalculate } = require("./basketCalculate.js");
+const { basketOrder } = require("./basketOrder.js")
+const { getNotifications } = require("./getNotifications.docs.js")
+const { getProduct } = require("./getProduct.docs.js")
+const { getProducts } = require("./getProducts.docs.js")
+const { getUser } = require("./getUser.docs.js")
+const { login } = require("./login.docs.js")
 
 const apiDocumentation = {
   openapi: "3.0.1",
@@ -49,7 +49,7 @@ const apiDocumentation = {
     "/api/basket/order": {
       post: basketOrder,
     },
-    
+
   },
   components: {
     securitySchemes: {
@@ -62,4 +62,4 @@ const apiDocumentation = {
   },
 };
 
-export { apiDocumentation };
+module.exports = { apiDocumentation } 

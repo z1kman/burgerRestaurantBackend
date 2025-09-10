@@ -1,8 +1,8 @@
-export const getNotifications = {
+const getNotifications = {
   tags: ["Notifications"],
   summary: "Get all notification for user",
   description: "Get all notification for user",
-  security: [{ bearerAuth: {} as any }],
+  security: [{ bearerAuth: {} }],
   parameters: [
     {
       in: "query",
@@ -87,3 +87,4 @@ export const getNotifications = {
 };
 
 
+module.exports = { getNotifications } 

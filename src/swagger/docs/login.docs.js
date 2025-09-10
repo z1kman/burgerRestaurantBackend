@@ -1,4 +1,4 @@
-export const login = {
+const login = {
   tags: ["User"],
   description: "Authorize user by login data",
   summary: "Authorize user by login data",
@@ -102,3 +102,5 @@ export const login = {
     },
   },
 };
+
+module.exports = { login } 

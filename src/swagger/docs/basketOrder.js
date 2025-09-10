@@ -1,4 +1,4 @@
-export const basketOrder = {
+const basketOrder = {
   tags: ["Basket"],
   summary:
     "Makes an order of the basket. The route accepts both authorized and unauthorized requests",
@@ -162,3 +162,5 @@ export const basketOrder = {
     },
   },
 };
+
+module.exports = { basketOrder } 

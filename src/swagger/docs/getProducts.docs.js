@@ -98,4 +98,4 @@ const getProducts = {
   },
 };
 
-export { getProducts };
+module.exports = { getProducts } 

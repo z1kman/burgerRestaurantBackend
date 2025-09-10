@@ -1,8 +1,8 @@
-export const getUser = {
+const getUser = {
   tags: ["User"],
   description: "Get information on the currently authorized user",
   summary: "Get user information",
-  security: [{ bearerAuth: {} as any }],
+  security: [{ bearerAuth: {} }],
   responses: {
     "200": {
       description: "All products successfully received ",
@@ -81,3 +81,5 @@ export const getUser = {
     },
   },
 };
+
+module.exports = { getUser } 
