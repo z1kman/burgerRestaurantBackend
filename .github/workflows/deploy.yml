@@ -47,8 +47,8 @@ jobs:
       - name: Add server to known_hosts
         run: ssh-keyscan -H $SERVER_IP  >> ~/.ssh/known_hosts
 
-      # - name: Run Ansible [Deploy build]
-      #   run: ansible-playbook -i ansible/inventory.yml ansible/playbook_deploy.yml
+      - name: Run Ansible [Deploy build]
+        run: ansible-playbook -i ansible/inventory.yml ansible/playbook_deploy.yml
 
       # - name: Run Ansible [Configure Nginx]
       #   run: ansible-playbook -i ansible/inventory.yml ansible/playbook_nginx.yml
