@@ -32,6 +32,10 @@
                 env: {
                   DATABASE_URL: "{{ database_url }}"
                 }
+              },
+              {
+                name: "swagger_{{ domain_name }}",
+                script: "{{ server_build_path }}/swagger/index.js",
               }
             ]
           };
@@ -46,9 +50,3 @@
 
     - name: Generate PM2 startup script
       command: pm2 startup systemd -u {{ ansible_user }} --hp {{ ansible_env.HOME }}
-
-
-
-
-
-
