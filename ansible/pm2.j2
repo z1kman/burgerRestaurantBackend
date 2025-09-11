@@ -4,12 +4,18 @@ module.exports = {
       name: "{{ domain_name }}",
       script: "{{ server_build_path }}/index.js",
       env: {
+        API_PORT: "{{ api_port }}",
         DATABASE_URL: "{{ database_url }}"
       }
     },
     {
       name: "swagger_{{ domain_name }}",
       script: "{{ server_build_path }}/swagger/index.js",
+      env: {
+        API_PORT: "{{ api_port }}",
+        SWAGGER_PORT: "{{ swagger_port }}",
+        DATABASE_URL: "{{ database_url }}"
+      }
     }
   ]
 };

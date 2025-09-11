@@ -5,6 +5,8 @@
     domain_name: "{{ lookup('env','DOMAIN_NAME') }}"
     server_build_path: "/var/www/{{ domain_name }}"
     database_url: "{{ lookup('env','DATABASE_URL') }}"
+    api_port: "${{lookup('env','API_PORT') }}"
+    swagger_port: "${{lookup('env','SWAGGER_PORT') }}"
 
   tasks:
     - name: Ensure Node.js and npm are installed
@@ -21,7 +23,7 @@
         global: yes
 
     - name: Create PM2 ecosystem config
-      template: 
+      template:
         src: pm2.j2
         dest: "{{ server_build_path }}/ecosystem.config.js"
 

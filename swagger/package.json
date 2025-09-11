@@ -1,13 +1,13 @@
 {
-    "name": "api-swagger",
-    "version": "1.0.0",
-    "main": "index.js",
-    "author": "",
-    "license": "ISC",
-    "description": "",
-    "dependencies": {
-        "express": "^5.1.0",
-        "swagger-jsdoc": "^6.2.8",
-        "swagger-ui-express": "^5.0.1"
-    }
+  "name": "api-swagger",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^5.1.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
+  }
 }

@@ -17,6 +17,8 @@ jobs:
       CERTBOT_EMAIL: ${{ secrets.CERTBOT_EMAIL }}
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       SECRET_AUTH_TOKEN: ${{secrets.SECRET_AUTH_TOKEN}}
+      API_PORT: ${{ secrets.API_PORT }}
+      SWAGGER_PORT: ${{ secrets.SWAGGER_PORT }}
 
     steps:
       - name: Checkout code
@@ -26,11 +28,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 24
-
-      - name: Create .env file
-        run: |
-          echo "DATABASE_URL=$DATABASE_URL" >> .env
-          echo "SECRET_AUTH_TOKEN=$SECRET_AUTH_TOKEN" >> .env
 
       - name: Install deps
         run: |
