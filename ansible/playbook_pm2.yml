@@ -1,0 +1,39 @@
+- name: Start PM2
+  hosts: web1
+  become: yes
+  vars:
+    domain_name: "{{ lookup('env','DOMAIN_NAME') }}"
+    server_build_path: "/var/www/{{ domain_name }}"
+    database_url: "{{ lookup('env','DATABASE_URL') }}"
+    api_port: "{{lookup('env','API_PORT') }}"
+    swagger_port: "{{lookup('env','SWAGGER_PORT') }}"
+
+  tasks:
+    - name: Ensure Node.js and npm are installed
+      apt:
+        name:
+          - nodejs
+          - npm
+        state: present
+        update_cache: yes
+
+    - name: Install PM2 globally
+      npm:
+        name: pm2
+        global: yes
+
+    - name: Create PM2 ecosystem config
+      template:
+        src: pm2.j2
+        dest: "{{ server_build_path }}/ecosystem.config.js"
+
+    - name: Start app with PM2
+      command: pm2 startOrReload ecosystem.config.js
+      args:
+        chdir: "{{ server_build_path }}"
+
+    - name: Save PM2 process list to startup
+      command: pm2 save
+
+    - name: Generate PM2 startup script
+      command: pm2 startup systemd -u {{ ansible_user }} --hp {{ ansible_env.HOME }}

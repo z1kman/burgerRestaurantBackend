@@ -1,31 +1,57 @@
-name: Deploy to Server
+name: Deploy
 
 on:
   push:
     branches:
-      - main
+      - master
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      SERVER_IP: ${{ secrets.SERVER_IP }}
+      DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
+      CERTBOT_EMAIL: ${{ secrets.CERTBOT_EMAIL }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      SECRET_AUTH_TOKEN: ${{secrets.SECRET_AUTH_TOKEN}}
+      API_PORT: ${{ secrets.API_PORT }}
+      SWAGGER_PORT: ${{ secrets.SWAGGER_PORT }}
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install SSH Client
-        run: sudo apt-get install openssh-client
-
-      - name: Executing remote ssh commands
-        uses: appleboy/ssh-action@v1.2.0
+      - name: Setup Node
+        uses: actions/setup-node@v3
         with:
-          host: ${{ secrets.SSH_URL }}
-          username: ${{ secrets.SSH_USER }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          port: 22
-          script: |
-            cd ${{ secrets.PROJECT_PLACE }}
-            git pull origin main
-            npm install 
-            npm run build
-            pm2 restart burgerRestaurantBackend
+          node-version: 24
+
+      - name: Install deps
+        run: |
+          npm install
+          cd swagger
+          npm install
+
+      - name: Build app
+        run: npm run build
+
+      - name: Add SSH key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known_hosts
+        run: ssh-keyscan -H $SERVER_IP  >> ~/.ssh/known_hosts
+
+      - name: Run Ansible [Deploy build]
+        run: ansible-playbook -i ansible/inventory.yml ansible/playbook_deploy.yml
+
+      - name: Run Ansible [Start PM2]
+        run: ansible-playbook -i ansible/inventory.yml ansible/playbook_pm2.yml
+
+      - name: Run Ansible [Configure Nginx]
+        run: ansible-playbook -i ansible/inventory.yml ansible/playbook_nginx.yml

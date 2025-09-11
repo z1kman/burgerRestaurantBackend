@@ -5,7 +5,7 @@
   "main": "dist/server.js",
   "scripts": {
     "start": "nodemon src/server.ts",
-    "build": "rimraf dist && tsc",
+    "build": "node build",
     "ts.check": "tsc --project tsconfig.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -36,6 +36,8 @@
     "@types/node": "^22.7.2",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.6",
+    "esbuild": "^0.25.9",
+    "fs-extra": "^11.3.1",
     "nodemon": "^3.1.7",
     "prisma": "^5.20.0",
     "ts-node": "^10.9.2",

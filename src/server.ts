@@ -1,9 +1,8 @@
 import { app } from "./app";
-import https from "https";
 
-const PORT = process.env.PORT || 4000;
+const API_PORT = process.env.API_PORT ?? 4000;
 
 
-app.listen(PORT, () => {
-  console.log(`Server is listening on ${PORT}`);
+app.listen(API_PORT, () => {
+  console.log(`Server is listening on ${API_PORT}`);
 });

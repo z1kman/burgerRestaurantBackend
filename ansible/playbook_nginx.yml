@@ -1,0 +1,62 @@
+- name: Configure Nginx
+  hosts: web1
+  become: yes
+  vars:
+    email: "{{ lookup('env','CERTBOT_EMAIL') }}"
+    domain_name: "{{ lookup('env','DOMAIN_NAME') }}"
+    server_build_path: "/var/www/{{ domain_name }}"
+    nginx_sites_available: "/etc/nginx/sites-available"
+    nginx_sites_enabled: "/etc/nginx/sites-enabled"
+    api_port: "{{lookup('env','API_PORT') }}"
+    swagger_port: "{{lookup('env','SWAGGER_PORT') }}"
+
+
+  tasks:
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+    
+    - name: Install Certbot
+      apt:
+        name: [certbot, python3-certbot-nginx]
+        state: present
+        update_cache: yes
+
+    - name: Check if Nginx config exists
+      stat:
+        path: "{{ nginx_sites_available }}/{{ domain_name }}"
+      register: nginx_conf_exists
+
+    - name: Create Nginx config
+      template: 
+        src: nginx.conf.j2
+        dest: "{{ nginx_sites_available }}/{{ domain_name }}"
+      notify: Restart Nginx
+      when: not nginx_conf_exists.stat.exists
+
+    - name: Create symlink
+      file:
+        src: "{{ nginx_sites_available }}/{{ domain_name }}"
+        dest: "{{ nginx_sites_enabled }}/{{ domain_name }}"
+        state: link
+        force: yes
+      notify: Restart Nginx
+
+    - name: Check if SSL certificate already exists
+      stat:
+        path: "/etc/letsencrypt/live/{{ domain_name }}/fullchain.pem"
+      register: ssl_cert_exists
+
+    - name: Obtain SSL certificate
+      command: >
+        certbot --nginx -n --agree-tos --redirect --email {{ email }} -d {{ domain_name }}
+      when: 
+        - not ssl_cert_exists.stat.exists
+
+  handlers:
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
