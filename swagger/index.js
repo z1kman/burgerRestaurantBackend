@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 4002;
 const app = express();
 app.use(express.json());
 
-app.use("/", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 swaggerUi.setup(apiDocumentation);
 
 

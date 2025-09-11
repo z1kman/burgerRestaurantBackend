@@ -7,9 +7,7 @@
     local_temp_build_path: "/tmp/build.tar.gz"
     server_build_path: "/var/www/{{ domain_name }}"
     server_temp_archive: "{{ server_build_path }}/build.tar.gz"
-    # secret_auth_token: "{{ lookup('env','SECRET_AUTH_TOKEN') }}"
-    # database_url: "{{ lookup('env','DATABASE_URL') }}"
-
+    
   tasks:
     - name: Create archive from build contents on runner
       community.general.archive:
