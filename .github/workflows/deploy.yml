@@ -55,5 +55,5 @@ jobs:
       - name: Run Ansible [Start PM2]
         run: ansible-playbook -i ansible/inventory.yml ansible/playbook_pm2.yml
 
-      # - name: Run Ansible [Configure Nginx]
-      #   run: ansible-playbook -i ansible/inventory.yml ansible/playbook_nginx.yml
+      - name: Run Ansible [Configure Nginx]
+        run: ansible-playbook -i ansible/inventory.yml ansible/playbook_nginx.yml
