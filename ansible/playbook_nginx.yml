@@ -7,6 +7,9 @@
     server_build_path: "/var/www/{{ domain_name }}"
     nginx_sites_available: "/etc/nginx/sites-available"
     nginx_sites_enabled: "/etc/nginx/sites-enabled"
+    api_port: "${{lookup('env','API_PORT') }}"
+    swagger_port: "${{lookup('env','SWAGGER_PORT') }}"
+
 
   tasks:
     - name: Install Nginx

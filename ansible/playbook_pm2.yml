@@ -28,7 +28,7 @@
         dest: "{{ server_build_path }}/ecosystem.config.js"
 
     - name: Start app with PM2
-      command: pm2 start ecosystem.config.js
+      command: pm2 startOrReload ecosystem.config.js
       args:
         chdir: "{{ server_build_path }}"
 
