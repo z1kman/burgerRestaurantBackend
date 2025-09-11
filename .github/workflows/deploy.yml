@@ -2,12 +2,11 @@ name: Deploy
 
 on:
   pull_request:
-    branches: [ main ]
-
+    branches: [main]
 
 concurrency:
   group: deploy-main
-  cancel-in-progress: true 
+  cancel-in-progress: true
 
 jobs:
   deploy:
@@ -18,7 +17,6 @@ jobs:
       CERTBOT_EMAIL: ${{ secrets.CERTBOT_EMAIL }}
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       SECRET_AUTH_TOKEN: ${{secrets.SECRET_AUTH_TOKEN}}
-
 
     steps:
       - name: Checkout code
@@ -53,6 +51,9 @@ jobs:
 
       - name: Run Ansible [Deploy build]
         run: ansible-playbook -i ansible/inventory.yml ansible/playbook_deploy.yml
+
+      - name: Run Ansible [Start PM2]
+        run: ansible-playbook -i ansible/inventory.yml ansible/playbook_pm2.yml
 
       # - name: Run Ansible [Configure Nginx]
       #   run: ansible-playbook -i ansible/inventory.yml ansible/playbook_nginx.yml

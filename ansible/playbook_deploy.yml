@@ -44,9 +44,3 @@
       file:
         path: "{{ server_temp_archive }}"
         state: absent
-
-    # - name: Create .env file
-    #   template:
-    #     src: .env.j2
-    #     dest: "{{ server_build_path }}/.env"
-
