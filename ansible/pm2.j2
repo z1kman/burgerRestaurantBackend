@@ -1,0 +1,15 @@
+module.exports = {
+  apps: [
+    {
+      name: "{{ domain_name }}",
+      script: "{{ server_build_path }}/index.js",
+      env: {
+        DATABASE_URL: "{{ database_url }}"
+      }
+    },
+    {
+      name: "swagger_{{ domain_name }}",
+      script: "{{ server_build_path }}/swagger/index.js",
+    }
+  ]
+};

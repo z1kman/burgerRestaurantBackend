@@ -21,24 +21,11 @@
         global: yes
 
     - name: Create PM2 ecosystem config
-      copy:
+      template: 
+        src: pm2.j2
         dest: "{{ server_build_path }}/ecosystem.config.js"
-        content: |
-          module.exports = {
-            apps: [
-              {
-                name: "{{ domain_name }}",
-                script: "{{ server_build_path }}/index.js",
-                env: {
-                  DATABASE_URL: "{{ database_url }}"
-                }
-              },
-              {
-                name: "swagger_{{ domain_name }}",
-                script: "{{ server_build_path }}/swagger/index.js",
-              }
-            ]
-          };
+
+      when: not nginx_conf_exists.stat.exists
 
     - name: Start app with PM2
       command: pm2 start ecosystem.config.js
