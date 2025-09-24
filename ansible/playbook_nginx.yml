@@ -38,7 +38,7 @@
         swagger_port: "{{ swagger_port }}"
         api_port: "{{ api_port }}"
 
-  - name: Create symlink for HTTP config
+    - name: Create symlink for HTTP config
       file:
         src: "{{ nginx_sites_available }}/{{ domain_name }}-http"
         dest: "{{ nginx_sites_enabled }}/{{ domain_name }}-http"
