@@ -10,7 +10,6 @@
     api_port: "{{lookup('env','API_PORT') }}"
     swagger_port: "{{lookup('env','SWAGGER_PORT') }}"
 
-
   tasks:
     - name: Install Nginx
       apt:
@@ -24,39 +23,76 @@
         state: present
         update_cache: yes
 
-    - name: Check if Nginx config exists
+    - name: Check if SSL certificate exists
       stat:
-        path: "{{ nginx_sites_available }}/{{ domain_name }}"
-      register: nginx_conf_exists
+        path: "/etc/letsencrypt/live/{{ domain_name }}/fullchain.pem"
+      register: ssl_cert_before_certbot_exitsts
 
-    - name: Create Nginx config
-      template: 
+    - name: Create Nginx HTTP config
+      template:
         src: nginx.conf.j2
-        dest: "{{ nginx_sites_available }}/{{ domain_name }}"
-      notify: Restart Nginx
-      when: not nginx_conf_exists.stat.exists
+        dest: "{{ nginx_sites_available }}/{{ domain_name }}-http"
+      vars:
+        ssl_exists: "{{ ssl_cert_before_certbot_exitsts.stat.exists }}"
+        domain_name: "{{ domain_name }}"
+        swagger_port: "{{ swagger_port }}"
+        api_port: "{{ api_port }}"
 
-    - name: Create symlink
+  - name: Create symlink for HTTP config
+      file:
+        src: "{{ nginx_sites_available }}/{{ domain_name }}-http"
+        dest: "{{ nginx_sites_enabled }}/{{ domain_name }}-http"
+        state: link
+      notify: Restart Nginx
+
+    - name: Obtain SSL certificate
+      command: >
+        certbot certonly --webroot -w {{ server_build_path }} -n --agree-tos --email {{ email }} -d {{ domain_name }}
+      when:
+        - not ssl_cert_before_certbot_exitsts.stat.exists
+
+    - name: Check if SSL certificate exists
+      stat:
+        path: "/etc/letsencrypt/live/{{ domain_name }}/fullchain.pem"
+      register: ssl_cert_after_certbot_exitsts
+
+    - name: Create Nginx HTTPS config
+      template:
+        src: nginx.conf.https.j2
+        dest: "{{ nginx_sites_available }}/{{ domain_name }}"
+      vars:
+        domain_name: "{{ domain_name }}"
+        swagger_port: "{{ swagger_port }}"
+        api_port: "{{ api_port }}"
+
+    - name: Create symlink for HTTPS config
       file:
         src: "{{ nginx_sites_available }}/{{ domain_name }}"
         dest: "{{ nginx_sites_enabled }}/{{ domain_name }}"
         state: link
-        force: yes
       notify: Restart Nginx
 
-    - name: Check if SSL certificate already exists
-      stat:
-        path: "/etc/letsencrypt/live/{{ domain_name }}/fullchain.pem"
-      register: ssl_cert_exists
-
-    - name: Obtain SSL certificate
-      command: >
-        certbot --nginx -n --agree-tos --redirect --email {{ email }} -d {{ domain_name }}
-      when: 
-        - not ssl_cert_exists.stat.exists
+    - name: Update Nginx HTTP config after certbot
+      template:
+        src: nginx.conf.j2
+        dest: "{{ nginx_sites_available }}/{{ domain_name }}-http"
+      vars:
+        ssl_exists: "{{ ssl_cert_after_certbot_exitsts.stat.exists }}"
+      when:
+        - not ssl_cert_before_certbot_exitsts.stat.exists
+      notify: Restart Nginx
 
   handlers:
     - name: Restart Nginx
       service:
         name: nginx
         state: restarted
+
+
+
+
+
+
+
+
+
