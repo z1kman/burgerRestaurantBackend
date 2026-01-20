@@ -7,8 +7,8 @@
     server_build_path: "/var/www/{{ domain_name }}"
     nginx_sites_available: "/etc/nginx/sites-available"
     nginx_sites_enabled: "/etc/nginx/sites-enabled"
-    api_port: "{{ lookup('env','API_PORT') }}"
-    swagger_port: "{{ lookup('env','SWAGGER_PORT') }}"
+    api_port: "{{lookup('env','API_PORT') }}"
+    swagger_port: "{{lookup('env','SWAGGER_PORT') }}"
 
   tasks:
     - name: Install Nginx
@@ -23,16 +23,17 @@
         state: present
         update_cache: yes
 
-    - name: Check if SSL certificate exists before certbot
+    - name: Check if SSL certificate exists
       stat:
         path: "/etc/letsencrypt/live/{{ domain_name }}/fullchain.pem"
-      register: ssl_cert_before
+      register: ssl_cert_before_certbot_exitsts
 
-    - name: Create HTTP Nginx config
+    - name: Create Nginx HTTP config
       template:
         src: nginx.conf.j2
         dest: "{{ nginx_sites_available }}/{{ domain_name }}-http"
-      notify: Restart Nginx
+      vars:
+        ssl_exists: "{{ ssl_cert_before_certbot_exitsts.stat.exists }}"
 
     - name: Create symlink for HTTP config
       file:
@@ -41,39 +42,37 @@
         state: link
       notify: Restart Nginx
 
-    - name: Ensure Nginx is running before Certbot
-      service:
-        name: nginx
-        state: started
-
-    - name: Obtain SSL certificate via webroot
+    - name: Obtain SSL certificate
       command: >
-        certbot certonly --webroot -w {{ server_build_path }}
-        -n --agree-tos --email {{ email }} -d {{ domain_name }}
-      when: not ssl_cert_before.stat.exists
-      register: certbot_result
-      failed_when: certbot_result.rc not in [0, 2]  # rc=2 if cert exists
+        certbot certonly --webroot -w {{ server_build_path }} -n --agree-tos --email {{ email }} -d {{ domain_name }}
+      when:
+        - not ssl_cert_before_certbot_exitsts.stat.exists
 
-    - name: Check if SSL certificate exists after Certbot
+    - name: Check if SSL certificate exists
       stat:
         path: "/etc/letsencrypt/live/{{ domain_name }}/fullchain.pem"
-      register: ssl_cert_after
+      register: ssl_cert_after_certbot_exitsts
 
-    - name: Create HTTPS Nginx config if certificate exists
+    - name: Create Nginx HTTPS config
       template:
         src: nginx.conf.https.j2
         dest: "{{ nginx_sites_available }}/{{ domain_name }}"
-      vars:
-        ssl_exists: "{{ ssl_cert_after.stat.exists }}"
-      when: ssl_cert_after.stat.exists
-      notify: Restart Nginx
 
     - name: Create symlink for HTTPS config
       file:
         src: "{{ nginx_sites_available }}/{{ domain_name }}"
         dest: "{{ nginx_sites_enabled }}/{{ domain_name }}"
         state: link
-      when: ssl_cert_after.stat.exists
+      notify: Restart Nginx
+
+    - name: Update Nginx HTTP config after certbot
+      template:
+        src: nginx.conf.j2
+        dest: "{{ nginx_sites_available }}/{{ domain_name }}-http"
+      vars:
+        ssl_exists: "{{ ssl_cert_after_certbot_exitsts.stat.exists }}"
+      when:
+        - not ssl_cert_before_certbot_exitsts.stat.exists
       notify: Restart Nginx
 
   handlers:
@@ -81,3 +80,12 @@
       service:
         name: nginx
         state: restarted
+
+
+
+
+
+
+
+
+
