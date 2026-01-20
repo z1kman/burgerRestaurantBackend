@@ -1,6 +1,7 @@
 # Burger Restaurant Application API
 ### About the Project
 
+
 This project is an API for a [restaurant application](https://github.com/anka-ka/Burger-application) that allows customers to browse the menu in multiple languages, place orders, and view their notifications and account points (loyalty program)
 
 ---
