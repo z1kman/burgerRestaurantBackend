@@ -42,6 +42,12 @@
         state: link
       notify: Restart Nginx
 
+    - name: Ensure Nginx is running
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
     # - name: Obtain SSL certificate
     #   command: >
     #     certbot certonly --webroot -w {{ server_build_path }} -n --agree-tos --email {{ email }} -d {{ domain_name }}
