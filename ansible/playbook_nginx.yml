@@ -42,6 +42,20 @@
         state: link
       notify: Restart Nginx
 
+    - name: Ensure Nginx is running
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Create .well-known/acme-challenge folder for Certbot
+      file:
+        path: "{{ server_build_path }}/.well-known/acme-challenge"
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: '0755'
+
     - name: Obtain SSL certificate
       command: >
         certbot certonly --webroot -w {{ server_build_path }} -n --agree-tos --email {{ email }} -d {{ domain_name }}
@@ -74,6 +88,12 @@
       when:
         - not ssl_cert_before_certbot_exitsts.stat.exists
       notify: Restart Nginx
+      
+    - name: Ensure Nginx is running
+      service:
+        name: nginx
+        state: started
+        enabled: yes
 
   handlers:
     - name: Restart Nginx
