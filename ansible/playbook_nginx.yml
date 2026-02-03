@@ -48,6 +48,7 @@
         state: started
         enabled: yes
 
+
     # - name: Obtain SSL certificate
     #   command: >
     #     certbot certonly --webroot -w {{ server_build_path }} -n --agree-tos --email {{ email }} -d {{ domain_name }}
