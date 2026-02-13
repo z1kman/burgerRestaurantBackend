@@ -7,7 +7,7 @@ server {
     {% else %}
 
     location ^~ /.well-known/acme-challenge/ {
-        root {{ server_build_path }}
+        root {{ server_build_path }};
         access_log off;
         log_not_found off;
         try_files $uri =404;
