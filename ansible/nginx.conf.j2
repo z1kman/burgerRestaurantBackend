@@ -5,6 +5,14 @@ server {
     {% if ssl_exists %}
     return 301 https://$host$request_uri;
     {% else %}
+    root {{ server_build_path }} ;
+
+    location ^~ /.well-known/acme-challenge/ {
+        root {{ server_build_path }};
+        access_log off;
+        log_not_found off;
+    }
+
     location / {
         proxy_pass http://localhost:{{ api_port }};
         proxy_http_version 1.1;
