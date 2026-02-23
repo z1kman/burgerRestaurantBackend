@@ -1,15 +1,23 @@
-FROM node:20.12.0
+FROM node:20-slim
+
+RUN apt-get update -y && apt-get install -y \
+    openssl \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
 COPY package*.json ./
-
 RUN npm install
+
+COPY prisma ./prisma
+
+RUN npx prisma generate
 
 COPY . .
 
-RUN npm run build
+RUN node build.js
 
 EXPOSE 4000
 
-CMD ["node", "dist/server.js"]
+CMD ["node", "dist/index.js"]
