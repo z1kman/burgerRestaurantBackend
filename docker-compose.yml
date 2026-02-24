@@ -1,10 +1,15 @@
-version: '3'
 services:
-  app:
-    image: burger-restaurant-backend
-    build: .
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: backend
+    network_mode: bridge 
     ports:
       - "4000:4000"
-    environment:
-      - SECRET_AUTH_TOKEN=${{ secrets.SECRET_AUTH_TOKEN }}
-      - DATABASE_URL=${{ secrets.DATABASE_URL }}
+    env_file:
+      - .env
+    volumes:
+      - /etc/localtime:/etc/localtime:ro 
+    restart: unless-stopped 
+
