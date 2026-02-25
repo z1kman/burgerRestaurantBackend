@@ -12,9 +12,13 @@
     - name: Install Docker
       shell: |
         if ! command -v docker &> /dev/null; then
+          echo "Docker not found"
           curl -fsSL https://get.docker.com -o get-docker.sh
           sh get-docker.sh
           usermod -aG docker {{ ansible_user }}
+          echo "Docker installed"
+        else
+          echo "Docker already exists. Skip installation"
         fi
     
     - name: Install Docker Compose
