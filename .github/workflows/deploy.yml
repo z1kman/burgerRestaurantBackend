@@ -15,13 +15,13 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      SERVER_IP: ${{ secrets.SERVER_IP }}
-      DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
+      SERVER_IP: ${{ vars.SERVER_IP }}
+      DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
       CERTBOT_EMAIL: ${{ secrets.CERTBOT_EMAIL }}
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       SECRET_AUTH_TOKEN: ${{secrets.SECRET_AUTH_TOKEN}}
-      API_PORT: ${{ secrets.API_PORT }}
-      SWAGGER_PORT: ${{ secrets.SWAGGER_PORT }}
+      API_PORT: ${{ vars.API_PORT }}
+      SWAGGER_PORT: ${{ vars.SWAGGER_PORT }}
 
     steps:
       - name: Checkout code
