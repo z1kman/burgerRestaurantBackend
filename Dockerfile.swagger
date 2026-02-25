@@ -10,6 +10,6 @@ RUN npm install
 
 COPY swagger/ .
 
-EXPOSE APP_PORT
+EXPOSE ${APP_PORT}
 
 CMD ["node", "index.js"]

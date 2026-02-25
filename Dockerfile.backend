@@ -17,6 +17,6 @@ COPY . .
 
 RUN node build.js
 
-EXPOSE APP_PORT
+EXPOSE ${APP_PORT}
 
 CMD ["node", "dist/index.js"]
