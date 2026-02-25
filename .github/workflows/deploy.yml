@@ -3,7 +3,9 @@ name: Deploy
 on:
   push:
     branches:
-      - main
+      - '**'  # любой пуш в любую ветку
+  pull_request:
+    types: [opened, reopened, synchronize] 
 
 concurrency:
   group: deploy-main
@@ -25,20 +27,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 24
-
-      - name: Install deps
-        run: |
-          npm install
-          cd swagger
-          npm install
-
-      - name: Build app
-        run: npm run build
-
       - name: Add SSH key
         uses: webfactory/ssh-agent@v0.9.0
         with:
@@ -50,8 +38,8 @@ jobs:
       - name: Run Ansible [Deploy build]
         run: ansible-playbook -i ansible/inventory.yml ansible/playbook_deploy.yml
 
-      - name: Run Ansible [Start PM2]
-        run: ansible-playbook -i ansible/inventory.yml ansible/playbook_pm2.yml
+      # - name: Run Ansible [Start PM2]
+      #   run: ansible-playbook -i ansible/inventory.yml ansible/playbook_pm2.yml
 
-      - name: Run Ansible [Configure Nginx]
-        run: ansible-playbook -i ansible/inventory.yml ansible/playbook_nginx.yml
+      # - name: Run Ansible [Configure Nginx]
+      #   run: ansible-playbook -i ansible/inventory.yml ansible/playbook_nginx.yml

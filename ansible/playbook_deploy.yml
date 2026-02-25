@@ -9,36 +9,51 @@
     server_temp_archive: "{{ server_build_path }}/build.tar.gz"
     
   tasks:
-    - name: Create archive from build contents on runner
-      community.general.archive:
-        path: "{{ local_build_path }}/*"
-        dest: "{{ local_temp_build_path }}"
-      delegate_to: localhost
+    - name: Install Docker
+      shell: |
+        if ! command -v docker &> /dev/null; then
+          curl -fsSL https://get.docker.com -o get-docker.sh
+          sh get-docker.sh
+          usermod -aG docker {{ ansible_user }}
+        fi
+    
+    # - name: Install Docker Compose
+    #   shell: |
+    #     if ! command -v docker-compose &> /dev/null; then
+    #       curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    #       chmod +x /usr/local/bin/docker-compose
+    #     fi
+  
+    # - name: Create archive from build contents on runner
+    #   community.general.archive:
+    #     path: "{{ local_build_path }}/*"
+    #     dest: "{{ local_temp_build_path }}"
+    #   delegate_to: localhost
 
-    - name: Ensure server build path exists
-      file:
-        path: "{{ server_build_path }}"
-        state: directory
-        mode: "0755"
+    # - name: Ensure server build path exists
+    #   file:
+    #     path: "{{ server_build_path }}"
+    #     state: directory
+    #     mode: "0755"
 
-    - name: Copy archive to server
-      copy:
-        src: "{{ local_temp_build_path }}"
-        dest: "{{ server_temp_archive }}"
+    # - name: Copy archive to server
+    #   copy:
+    #     src: "{{ local_temp_build_path }}"
+    #     dest: "{{ server_temp_archive }}"
 
-    - name: Extract archive on server
-      unarchive:
-        src: "{{ server_temp_archive }}"
-        dest: "{{ server_build_path }}"
-        remote_src: yes
+    # - name: Extract archive on server
+    #   unarchive:
+    #     src: "{{ server_temp_archive }}"
+    #     dest: "{{ server_build_path }}"
+    #     remote_src: yes
 
-    - name: Remove archive from runner
-      file:
-        path: "{{ local_temp_build_path }}"
-        state: absent
-      delegate_to: localhost
+    # - name: Remove archive from runner
+    #   file:
+    #     path: "{{ local_temp_build_path }}"
+    #     state: absent
+    #   delegate_to: localhost
 
-    - name: Remove archive from server
-      file:
-        path: "{{ server_temp_archive }}"
-        state: absent
+    # - name: Remove archive from server
+    #   file:
+    #     path: "{{ server_temp_archive }}"
+    #     state: absent
