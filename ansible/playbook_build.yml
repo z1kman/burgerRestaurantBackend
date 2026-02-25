@@ -27,9 +27,6 @@
         mode: '0600'
 
     - name: Run Docker Compose
-      community.docker.docker_compose_v2:
-        project_src: "{{ server_build_path }}"
-        project_name: "{{ domain_name | regex_replace('[^a-zA-Z0-9_-]', '') | lower }}"
-        build: always 
-        state: present 
-        remove_orphans: yes
+      shell: |
+        cd {{ server_build_path }}
+        docker compose -p prod-burger up -d --build --remove-orphans

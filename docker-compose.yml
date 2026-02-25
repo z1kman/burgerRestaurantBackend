@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.backend
-    container_name: burgerBackend
+    container_name: backend
     network_mode: bridge 
     ports:
       - "7000:7000"
@@ -17,7 +17,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.swagger
-    container_name: burgerSwagger
+    container_name: swagger
     network_mode: bridge
     ports:
       - "7001:7001"
