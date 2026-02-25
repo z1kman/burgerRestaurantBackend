@@ -3,9 +3,7 @@ name: Deploy
 on:
   push:
     branches:
-      - '**'  # любой пуш в любую ветку
-  pull_request:
-    types: [opened, reopened, synchronize] 
+      - main
 
 concurrency:
   group: deploy-main
