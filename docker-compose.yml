@@ -3,10 +3,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.backend
+      args:
+        APP_PORT: ${API_PORT}
     container_name: backend
     network_mode: bridge 
     ports:
-      - "7000:7000"
+      - "${API_PORT}:${API_PORT}"
     env_file:
       - .env
     volumes:
@@ -17,10 +19,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.swagger
+      args:
+        APP_PORT: ${SWAGGER_PORT}
     container_name: swagger
     network_mode: bridge
     ports:
-      - "7001:7001"
+      - "${SWAGGER_PORT}:${SWAGGER_PORT}"
     env_file:
       - .envSwagger
     volumes:

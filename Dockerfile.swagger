@@ -1,5 +1,7 @@
 FROM node:20-alpine
 
+ARG APP_PORT=7001
+
 WORKDIR /app
 
 COPY swagger/package*.json ./
@@ -8,6 +10,6 @@ RUN npm install
 
 COPY swagger/ .
 
-EXPOSE 7001
+EXPOSE APP_PORT
 
 CMD ["node", "index.js"]
