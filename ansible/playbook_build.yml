@@ -29,4 +29,4 @@
     - name: Run Docker Compose
       shell: |
         cd {{ server_build_path }}
-        docker compose -p prod-burger up -d --build --remove-orphans
+        API_PORT={{ api_port }} SWAGGER_PORT={{ swagger_port }} docker compose -p prod-burger up -d --build --remove-orphans
