@@ -1,4 +1,4 @@
-- name: Deploy
+- name: Upload to server
   hosts: web1
   become: yes
   vars:
