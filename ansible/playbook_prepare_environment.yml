@@ -29,9 +29,21 @@
           usermod -aG docker {{ ansible_user }}
         fi
 
+    - name: Check if Docker Compose is installed 
+      block:
+      - name: Try to run docker compose command
+        command: docker compose version
+        register: docker_compose_version
+        ignore_errors: true
+        failed_when: false
+
+      - name: Show the variable
+        debug:
+          msg: "Docker Compose installed: {{ docker_compose_version.rc == 0 }}"
+
     - name: Install Docker Compose
       shell: |
-        if ! command -v docker compose &> /dev/null; then
+        if [ {{ docker_compose_version.rc }} -ne 0 ]; then
           curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           chmod +x /usr/local/bin/docker-compose
         fi
