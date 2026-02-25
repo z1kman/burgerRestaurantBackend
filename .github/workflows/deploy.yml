@@ -41,6 +41,9 @@ jobs:
       - name: Run Ansible [Prepare environment]
         run: ansible-playbook -i ansible/inventory.yml ansible/playbook_prepare_environment.yml
 
+      - name: Run Ansible [Build]
+        run: ansible-playbook -i ansible/inventory.yml ansible/playbook_build.yml
+
       # - name: Run Ansible [Start PM2]
       #   run: ansible-playbook -i ansible/inventory.yml ansible/playbook_pm2.yml
 
