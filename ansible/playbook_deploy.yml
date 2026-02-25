@@ -1,4 +1,4 @@
-- name: Deploy build
+- name: Deploy
   hosts: web1
   become: yes
   vars:
@@ -9,25 +9,6 @@
     server_temp_archive: "{{ server_build_path }}/build.tar.gz"
     
   tasks:
-    - name: Install Docker
-      shell: |
-        if ! command -v docker &> /dev/null; then
-          echo "Docker not found"
-          curl -fsSL https://get.docker.com -o get-docker.sh
-          sh get-docker.sh
-          usermod -aG docker {{ ansible_user }}
-          echo "Docker installed"
-        else
-          echo "Docker already exists. Skip installation"
-        fi
-    
-    - name: Install Docker Compose
-      shell: |
-        if ! command -v docker compose &> /dev/null; then
-          curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          chmod +x /usr/local/bin/docker-compose
-        fi
-  
     - name: Create archive from contents on runner
       community.general.archive:
         path: "{{ local_build_path }}/*"
