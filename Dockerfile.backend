@@ -1,9 +1,6 @@
 FROM node:20-alpine
 
-RUN apt-get update -y
-RUN apt-get install -y openssl
-RUN apt-get clean
-RUN rm -rf /var/lib/apt/lists/*
+RUN apk update && apk add --no-cache openssl
 
 WORKDIR /app
 
