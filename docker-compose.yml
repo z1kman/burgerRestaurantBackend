@@ -2,14 +2,29 @@ services:
   backend:
     build:
       context: .
-      dockerfile: Dockerfile
-    container_name: backend
+      dockerfile: Dockerfile.backend
+    container_name: burgerBackend
     network_mode: bridge 
     ports:
-      - "4000:4000"
+      - "7000:7000"
     env_file:
       - .env
     volumes:
       - /etc/localtime:/etc/localtime:ro 
     restart: unless-stopped 
+  
+  swagger:
+    build:
+      context: .
+      dockerfile: Dockerfile.swagger
+    container_name: burgerSwagger
+    network_mode: bridge
+    ports:
+      - "7001:7001"
+    env_file:
+      - .envSwagger
+    volumes:
+      - /etc/localtime:/etc/localtime:ro 
+    restart: unless-stopped 
+
 
