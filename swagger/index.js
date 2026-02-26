@@ -4,7 +4,7 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerDocs = require("./swaggerConfig.js");
 const { apiDocumentation } = require("./docs/apiDocs.js");
 
-const SWAGGER_PORT = process.env.SWAGGER_PORT || 4001;
+const SWAGGER_PORT = process.env.SWAGGER_PORT || 4005;
 
 const app = express();
 app.use(express.json());

@@ -77,7 +77,6 @@
         src: "{{ nginx_sites_available }}/{{ domain_name }}"
         dest: "{{ nginx_sites_enabled }}/{{ domain_name }}"
         state: link
-      notify: Restart Nginx
 
     - name: Update Nginx HTTP config after certbot
       template:
@@ -87,14 +86,18 @@
         ssl_exists: "{{ ssl_cert_after_certbot_exitsts.stat.exists }}"
       when:
         - not ssl_cert_before_certbot_exitsts.stat.exists
-      notify: Restart Nginx
-      
+
     - name: Ensure Nginx is running
       service:
         name: nginx
         state: started
         enabled: yes
 
+    - name: Call Restart Nginx handler
+      command: /bin/true
+      notify: Restart Nginx
+      changed_when: true
+      
   handlers:
     - name: Restart Nginx
       service:

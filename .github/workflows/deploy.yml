@@ -13,31 +13,17 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      SERVER_IP: ${{ secrets.SERVER_IP }}
-      DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
+      SERVER_IP: ${{ vars.SERVER_IP }}
+      DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
       CERTBOT_EMAIL: ${{ secrets.CERTBOT_EMAIL }}
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       SECRET_AUTH_TOKEN: ${{secrets.SECRET_AUTH_TOKEN}}
-      API_PORT: ${{ secrets.API_PORT }}
-      SWAGGER_PORT: ${{ secrets.SWAGGER_PORT }}
+      API_PORT: ${{ vars.API_PORT }}
+      SWAGGER_PORT: ${{ vars.SWAGGER_PORT }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 24
-
-      - name: Install deps
-        run: |
-          npm install
-          cd swagger
-          npm install
-
-      - name: Build app
-        run: npm run build
 
       - name: Add SSH key
         uses: webfactory/ssh-agent@v0.9.0
@@ -47,11 +33,14 @@ jobs:
       - name: Add server to known_hosts
         run: ssh-keyscan -H $SERVER_IP  >> ~/.ssh/known_hosts
 
-      - name: Run Ansible [Deploy build]
-        run: ansible-playbook -i ansible/inventory.yml ansible/playbook_deploy.yml
+      - name: Run Ansible [Upload to server]
+        run: ansible-playbook -i ansible/inventory.yml ansible/playbook_upload.yml
+      
+      - name: Run Ansible [Prepare environment]
+        run: ansible-playbook -i ansible/inventory.yml ansible/playbook_prepare_environment.yml
 
-      - name: Run Ansible [Start PM2]
-        run: ansible-playbook -i ansible/inventory.yml ansible/playbook_pm2.yml
+      - name: Run Ansible [Build]
+        run: ansible-playbook -i ansible/inventory.yml ansible/playbook_build.yml
 
       - name: Run Ansible [Configure Nginx]
         run: ansible-playbook -i ansible/inventory.yml ansible/playbook_nginx.yml

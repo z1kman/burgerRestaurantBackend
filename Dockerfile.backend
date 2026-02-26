@@ -1,0 +1,22 @@
+FROM node:20-alpine
+
+ARG APP_PORT=7000
+
+RUN apk update && apk add --no-cache openssl
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+COPY prisma ./prisma
+
+RUN npx prisma generate
+
+COPY . .
+
+RUN node build.js
+
+EXPOSE ${APP_PORT}
+
+CMD ["node", "dist/index.js"]
