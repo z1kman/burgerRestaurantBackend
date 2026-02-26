@@ -78,6 +78,7 @@
         dest: "{{ nginx_sites_enabled }}/{{ domain_name }}"
         state: link
       notify: Restart Nginx
+      register: nginx_restart_result
 
     - name: Update Nginx HTTP config after certbot
       template:
@@ -88,7 +89,7 @@
       when:
         - not ssl_cert_before_certbot_exitsts.stat.exists
       notify: Restart Nginx
-      register: nginx_restart_result
+
     
     - name: Debug restart result
       debug:
