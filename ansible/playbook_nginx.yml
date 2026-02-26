@@ -88,6 +88,11 @@
       when:
         - not ssl_cert_before_certbot_exitsts.stat.exists
       notify: Restart Nginx
+      register: nginx_restart_result
+    
+    - name: Debug restart result
+      debug:
+        var: nginx_restart_result
       
     - name: Ensure Nginx is running
       service:
