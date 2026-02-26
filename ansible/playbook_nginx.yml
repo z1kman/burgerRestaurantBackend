@@ -77,6 +77,7 @@
         src: "{{ nginx_sites_available }}/{{ domain_name }}"
         dest: "{{ nginx_sites_enabled }}/{{ domain_name }}"
         state: link
+        force: yes
       notify: Restart Nginx
       register: nginx_restart_result
 
@@ -89,11 +90,6 @@
       when:
         - not ssl_cert_before_certbot_exitsts.stat.exists
       notify: Restart Nginx
-
-    
-    - name: Debug restart result
-      debug:
-        var: nginx_restart_result
       
     - name: Ensure Nginx is running
       service:
