@@ -4,31 +4,37 @@ services:
       context: .
       dockerfile: Dockerfile.backend
       args:
-        APP_PORT: ${API_PORT}
-    container_name: backend
-    network_mode: bridge 
-    ports:
-      - "${API_PORT}:${API_PORT}"
+        APP_PORT: 5000
+    container_name: 1backendBlue
+    networks:
+      - app_net
+    expose:
+      - "5000"
     env_file:
       - .env
     volumes:
       - /etc/localtime:/etc/localtime:ro 
     restart: unless-stopped 
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   
-  swagger:
-    build:
-      context: .
-      dockerfile: Dockerfile.swagger
-      args:
-        APP_PORT: ${SWAGGER_PORT}
-    container_name: swagger
-    network_mode: bridge
-    ports:
-      - "${SWAGGER_PORT}:${SWAGGER_PORT}"
-    env_file:
-      - .envSwagger
-    volumes:
-      - /etc/localtime:/etc/localtime:ro 
-    restart: unless-stopped 
+  # swagger:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.swagger
+  #     args:
+  #       APP_PORT: ${SWAGGER_PORT}
+  #   container_name: 1swagger
+  #   network_mode: bridge
+  #   ports:
+  #     - "${SWAGGER_PORT}:${SWAGGER_PORT}"
+  #   env_file:
+  #     - .envSwagger
+  #   volumes:
+  #     - /etc/localtime:/etc/localtime:ro 
+  #   restart: unless-stopped 
 
 
+networks:
+  app_net:
+    external: true
