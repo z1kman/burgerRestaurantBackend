@@ -54,7 +54,7 @@
       register: router_hash
       ignore_errors: true
 
-    - name: Show the router_hash
+    - name: Show the hash of the blue image/container 
       debug:
         msg: "Docker Compose installed: {{ router_hash.stdout }}"
 
@@ -62,6 +62,7 @@
       shell: |
         docker ps -a --format "{{ "{{.ID}} {{.Image}}" }}" \
         | grep "{{image_prefix}}{{image_server_prefix}}" \
+        | grep -v "{{ router_hash.stdout | default('') }}"
         | awk '{print $1}' \
         | xargs -r docker rm -f
       ignore_errors: true
@@ -71,6 +72,7 @@
       shell: |
         docker images --format "{{ "{{.ID}} {{.Repository}}" }}" \ \
         | grep "{{image_prefix}}{{image_server_prefix}}" \
+        | grep -v "{{ router_hash.stdout | default('') }}"
         | awk '{print $1}' \
         | xargs -r docker rmi -f
       ignore_errors: true
