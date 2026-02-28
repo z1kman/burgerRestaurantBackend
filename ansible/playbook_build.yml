@@ -37,6 +37,6 @@
         SHORT_SHA={{ short_sha }} \ 
         API_PORT={{ api_port }} \
         SWAGGER_PORT={{ swagger_port }} \
-        NETWORK_NAME={{ network_name }}
+        NETWORK_NAME={{ network_name }} \
         docker compose -p prod-burger up -d --build --remove-orphans
 
