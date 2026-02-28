@@ -1,0 +1,35 @@
+- name: Routing
+  hosts: web1
+  become: yes
+  vars:
+    server_build_path: "/var/www/{{ domain_name }}"
+    api_port: "{{lookup('env','API_PORT') }}"
+    swagger_port: "{{lookup('env','SWAGGER_PORT') }}"
+    short_sha: "{{ lookup('env','SHORT_SHA') }}"
+    image_prefix: "{{ lookup('env','DOCKER_IMAGE_PREFIX') }}"
+    
+  tasks:
+    - name: Determine if router needs update
+      set_fact:
+        router_needs_update: >-
+          {{ router_inspect.failed
+            or ('TARGET_SHA={{ short_sha }}' not in router_inspect.stdout)
+            or ('API_PORT={{ api_port }}' not in router_inspect.stdout) }}
+
+
+    - name: Run Router docker compose only if needed
+      shell: |
+        cd {{ server_build_path }}
+        TARGET_SHA={{ short_sha }} \
+        API_PORT={{ api_port }} \
+        docker compose -f docker-compose.router.yml up -d --build
+      when: router_needs_update
+
+
+    # - name: Run Router docker compose
+    #   shell: |
+    #     cd {{ server_build_path }}
+    #     TARGET_SHA={{ short_sha }} \
+    #     API_PORT={{ api_port }} \
+    #     docker compose -p {{image_prefix}} -f docker-compose.router.yml up -d
+

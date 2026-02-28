@@ -46,8 +46,12 @@ jobs:
       - name: Run Ansible [Prepare environment]
         run: ansible-playbook -i ansible/inventory.yml ansible/playbook_prepare_environment.yml
 
-      - name: Run Ansible [Build]
+      - name: Run Ansible [Build servers]
         run: ansible-playbook -i ansible/inventory.yml ansible/playbook_build.yml
+
+      - name: Run Ansible [Routing]
+        run: ansible-playbook -i ansible/inventory.yml ansible/playbook_router.yml
+
 
       - name: Run Ansible [Configure Nginx]
         run: ansible-playbook -i ansible/inventory.yml ansible/playbook_nginx.yml

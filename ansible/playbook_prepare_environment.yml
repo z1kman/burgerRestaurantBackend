@@ -85,6 +85,3 @@
     - name: Show the result of images cleanup
       debug:
         msg: "{{ images_cleanup_result.stdout }}"
-
-  #  | grep -v "{{ router_hash.stdout | default('') }}" \
-        # | grep -v "{{ router_hash.stdout | default('') }}" \
