@@ -1,4 +1,4 @@
-- name: Prepare environment
+- name: Build
   hosts: web1
   become: yes
   vars:
@@ -10,6 +10,7 @@
     swagger_port: "{{lookup('env','SWAGGER_PORT') }}"
     short_sha: "{{ lookup('env','SHORT_SHA') }}" 
     network_name: "prod_burger_network"
+    image_prefix: "prod-burger-"
 
   tasks:
     - name: Create .env file
@@ -40,7 +41,6 @@
       shell: docker network inspect {{ network_name }}
       register: network_inspect
       ignore_errors: yes
-      
 
     - name: Run Docker Compose
       shell: |
@@ -48,5 +48,21 @@
         SHORT_SHA={{ short_sha }} \
         API_PORT={{ api_port }} \
         SWAGGER_PORT={{ swagger_port }} \
-        docker compose -p prod-burger-{{ short_sha }} up -d --build --remove-orphans
+        docker compose -p {{ image_prefix }}{{ short_sha }} up -d --build --remove-orphans
+
+    # - name: Clean unecessary containers
+    #   shell: |
+    #     docker ps -a --format "{{.ID}} {{.Image}}" \
+    #     | grep "${image_prefix}" \
+    #     | grep -v "$KEEP_SHA" \
+    #     | awk '{print $1}' \
+    #     | xargs -r docker rm -f
+
+    # - name: Clean unecessary images
+    #   shell: |
+    #     docker ps -a --format "{{.ID}} {{.Image}}" \
+    #     | grep "${image_prefix}" \
+    #     | grep -v "$KEEP_SHA" \
+    #     | awk '{print $1}' \
+    #     | xargs -r docker rm -f
 
