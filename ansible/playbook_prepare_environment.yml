@@ -62,6 +62,7 @@
         | xargs -r docker rm -f
       ignore_errors: true
 
+
     - name: Clean unecessary images
       shell: |
         docker images \
