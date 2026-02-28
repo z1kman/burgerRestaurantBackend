@@ -4,12 +4,12 @@ services:
       context: .
       dockerfile: Dockerfile.backend
       args:
-        APP_PORT: 5000
-    container_name: 1backendBlue
+        APP_PORT: ${API_PORT}
+    container_name: backend
     networks:
       - app_net
     expose:
-      - "5000"
+      - "${API_PORT}"
     env_file:
       - .env
     volumes:
@@ -36,5 +36,5 @@ services:
 
 
 networks:
-  app_net:
+  burger_restaurant_net:
     external: true

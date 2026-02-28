@@ -22,10 +22,13 @@ jobs:
       SECRET_AUTH_TOKEN: ${{secrets.SECRET_AUTH_TOKEN}}
       API_PORT: ${{ vars.API_PORT }}
       SWAGGER_PORT: ${{ vars.SWAGGER_PORT }}
-
+  
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Set short SHA
+        run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
       - name: Add SSH key
         uses: webfactory/ssh-agent@v0.9.0
