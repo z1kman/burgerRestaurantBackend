@@ -1,6 +1,8 @@
 - name: Prepare environment
   hosts: web1
   become: yes
+  vars:
+    image_prefix: "{{ lookup('env','DOCKER_IMAGE_PREFIX') }}"
 
   tasks:
     - name: Check if Docker is installed 
@@ -55,8 +57,8 @@
     - name: Clean unecessary containers
       shell: |
         docker ps -a --format "{{.ID}} {{.Image}}" \
-        | grep "${image_prefix}" \
-        | grep -v "${{ router_hash.stdout | default('') }}" \
+        | grep "{image_prefix}" \
+        | grep -v "{{ router_hash.stdout | default('') }}" \
         | awk '{print $1}' \
         | xargs -r docker rm -f
       ignore_errors: true
@@ -64,8 +66,8 @@
     - name: Clean unecessary images
       shell: |
         docker ps -a --format "{{.ID}} {{.Image}}" \
-        | grep "${image_prefix}" \
-        | grep -v "${{ router_hash.stdout | default('') }}" \
+        | grep "{image_prefix}" \
+        | grep -v "{{ router_hash.stdout | default('') }}" \
         | awk '{print $1}' \
         | xargs -r docker rm -f
       ignore_errors: true

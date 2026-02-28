@@ -10,7 +10,7 @@
     swagger_port: "{{lookup('env','SWAGGER_PORT') }}"
     short_sha: "{{ lookup('env','SHORT_SHA') }}"
     network_name: "prod_burger_network"
-    image_prefix: "prod-burger-"
+    image_prefix: "{{ lookup('env','DOCKER_IMAGE_PREFIX') }}"
 
   tasks:
     - name: Create .env file
