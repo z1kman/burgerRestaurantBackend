@@ -47,17 +47,17 @@
     - name: Get active backend hash from router
       shell: |
         docker inspect router \
-          --format '{{range .Config.Env}}{{println .}}{{end}}' \
+          --format '{{ "{{range .Config.Env}}{{println .}}{{end}}" }}' \
           | grep TARGET_CONTAINER || echo "" \
           | cut -d'=' -f2 \
           | sed 's/backend-//'
-      register: blue_hash
+      register: router_hash
       ignore_errors: true
 
     - name: Clean unecessary containers
       shell: |
         docker ps -a --format "{{.ID}} {{.Image}}" \
-        | grep "{image_prefix}" \
+        | grep "{{image_prefix}}" \
         | grep -v "{{ router_hash.stdout | default('') }}" \
         | awk '{print $1}' \
         | xargs -r docker rm -f
@@ -66,7 +66,7 @@
     - name: Clean unecessary images
       shell: |
         docker ps -a --format "{{.ID}} {{.Image}}" \
-        | grep "{image_prefix}" \
+        | grep "{{image_prefix}}" \
         | grep -v "{{ router_hash.stdout | default('') }}" \
         | awk '{print $1}' \
         | xargs -r docker rm -f
