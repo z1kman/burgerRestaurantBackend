@@ -11,6 +11,8 @@
     short_sha: "{{ lookup('env','SHORT_SHA') }}"
     network_name: "prod_burger_network"
     image_prefix: "{{ lookup('env','DOCKER_IMAGE_PREFIX') }}"
+    server_prefix: "{{ lookup('env','DOCKER_IMAGE_SERVER_PREFIX') }}"
+    
 
   tasks:
     - name: Create .env file
@@ -39,7 +41,7 @@
         SHORT_SHA={{ short_sha }} \
         API_PORT={{ api_port }} \
         SWAGGER_PORT={{ swagger_port }} \
-        docker compose -p {{ image_prefix }}{{ short_sha }} up -d --build --remove-orphans
+        docker compose -p {{ image_prefix }}{{ server_prefix }}{{ short_sha }} up -d --build --remove-orphans
 
     - name: Run Router docker compose
       shell: |

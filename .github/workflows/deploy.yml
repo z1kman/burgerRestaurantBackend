@@ -23,6 +23,7 @@ jobs:
       API_PORT: ${{ vars.API_PORT }}
       SWAGGER_PORT: ${{ vars.SWAGGER_PORT }}
       DOCKER_IMAGE_PREFIX: "prod-burger-"
+      DOCKER_IMAGE_SERVER_PREFIX: "server-"
   
     steps:
       - name: Checkout code
