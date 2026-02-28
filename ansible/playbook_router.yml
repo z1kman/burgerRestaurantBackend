@@ -9,6 +9,11 @@
     image_prefix: "{{ lookup('env','DOCKER_IMAGE_PREFIX') }}"
     
   tasks:
+    - name: Check if router container exists
+      shell: docker inspect router --format '{{.Config.Env}}'
+      register: router_inspect
+      ignore_errors: true
+
     - name: Determine if router needs update
       set_fact:
         router_needs_update: >-
