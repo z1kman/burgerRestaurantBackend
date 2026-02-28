@@ -1,8 +1,8 @@
 version: "3.9"
 services:
-  myapp-router:
+  burger-router:
     image: alpine/socat
-    container_name: router
+    container_name: burger-router
     restart: always
     networks:
       - prod_burger_network

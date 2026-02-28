@@ -11,7 +11,7 @@
     
   tasks:
     - name: Check if router container exists
-      shell: docker inspect router --format "{{ "{{.Config.Env}}" }}"
+      shell: docker inspect burger-router --format "{{ "{{.Config.Env}}" }}"
       register: router_inspect
       ignore_errors: true
 
@@ -27,7 +27,7 @@
         cd {{ server_build_path }}
         TARGET_SHA={{ short_sha }} \
         API_PORT={{ api_port }} \
-        docker compose -p {{image_prefix}} -f docker-compose.router.yml up -d --force-recreate
+        docker compose -f docker-compose.router.yml up -d --force-recreate
       when: router_needs_update
 
 
