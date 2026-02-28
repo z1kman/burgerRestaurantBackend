@@ -8,6 +8,7 @@
     database_url: "{{ lookup('env','DATABASE_URL') }}"
     api_port: "{{lookup('env','API_PORT') }}"
     swagger_port: "{{lookup('env','SWAGGER_PORT') }}"
+    short_sha: "{{ lookup('env','SHORT_SHA') }}" 
 
   tasks:
     - name: Create .env file
@@ -29,4 +30,5 @@
     - name: Run Docker Compose
       shell: |
         cd {{ server_build_path }}
-        API_PORT={{ api_port }} SWAGGER_PORT={{ swagger_port }} docker compose -p prod-burger up -d --build --remove-orphans
+        SHORT_SHA={{ short_sha }} API_PORT={{ api_port }} SWAGGER_PORT={{ swagger_port }} docker compose -p prod-burger up -d --build --remove-orphans
+

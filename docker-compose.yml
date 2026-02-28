@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile.backend
       args:
         APP_PORT: ${API_PORT}
-    container_name: backend
+    container_name: backend-${SHORT_SHA}
     networks:
       - app_net
     expose:
