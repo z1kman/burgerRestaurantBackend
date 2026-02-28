@@ -33,15 +33,6 @@
       shell: |
         docker network inspect {{ network_name }} >/dev/null 2>&1 || docker network create {{ network_name }}
 
-    - name: Debug - show networks
-      shell: docker network ls | grep {{ network_name }} || echo "Network not found"
-      register: network_check
-
-    - name: Debug - show network inspect
-      shell: docker network inspect {{ network_name }}
-      register: network_inspect
-      ignore_errors: yes
-
     - name: Run Docker Compose
       shell: |
         cd {{ server_build_path }}
