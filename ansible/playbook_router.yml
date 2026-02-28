@@ -61,7 +61,7 @@
           cd {{ server_build_path }}
           API_PORT={{ api_port }} \
           SWAGGER_PORT={{ swagger_port }} \
-          CONTAINER_NAME={{ container_router_name }}
+          CONTAINER_NAME={{ container_router_name }} \
           docker compose -f docker-compose.router.yml up -d --force-recreate     
 
       when: router_needs_update

@@ -9,7 +9,7 @@
   tasks:
     - name: Get blue backend IP from router
       shell: |
-        docker exec -it {{ container_router_name }} sh -c "grep 'proxy_pass' /etc/nginx/conf.d/default.conf | awk -F'[/:]' '{print \$4}'"
+        docker exec -it {{ container_router_name }} sh -c "grep 'proxy_pass' /etc/nginx/conf.d/default.conf | awk -F'[/:]' '{print \$4}'" | head -1
       register: router_ip
       ignore_errors: true
 
