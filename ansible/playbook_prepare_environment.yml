@@ -44,6 +44,7 @@
           chmod +x /usr/local/bin/docker-compose
         fi
 
+    
     # - name: Get active backend hash from router
     #   shell: |
     #     docker inspect router \
@@ -53,6 +54,22 @@
     #       | sed 's/backend-//'
     #   register: router_hash
     #   ignore_errors: true
+
+    - name: C11
+      shell: docker ps -a 
+      register: docker_ps
+
+    - name: Debug 1
+      debug:
+        msg: "aaa: {{  docker_ps.stdout }}"
+
+    - name: c22
+      shell: docker ps -a 
+      register: docker_ps
+
+    - name: Debug 2
+      debug:
+        msg: "bbb: {{image_prefix}}"
 
     - name: Clean unecessary containers
       shell: |
