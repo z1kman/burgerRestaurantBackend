@@ -55,18 +55,10 @@
     #   register: router_hash
     #   ignore_errors: true
 
-    - name: Clean unnecessary containers
-      shell: |
-        docker ps -a --format "{{ "{{.ID}} {{.Image}}" }}"
-      register: docker_ps
-
-    - name: Debug 2
-      debug:
-        msg: "bbb: {{  docker_ps.stdout }}"
 
     - name: Clean unecessary containers
       shell: |
-        docker ps -a  \
+        docker ps -a --format "{{ "{{.ID}} {{.Image}}" }}" \
         | grep "{{image_prefix}}" \
         | awk '{print $1}' \
         | xargs -r docker rm -f
@@ -75,7 +67,7 @@
 
     - name: Clean unecessary images
       shell: |
-        docker images \
+        docker images --format "{{ "{{.ID}} {{.Repository}}" }}" \ \
         | grep "{{image_prefix}}" \
         | awk '{print $1}' \
         | xargs -r docker rm -f
