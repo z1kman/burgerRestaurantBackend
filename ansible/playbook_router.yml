@@ -1,0 +1,97 @@
+- name: Routing
+  hosts: web1
+  become: yes
+  vars:
+    domain_name: "{{ lookup('env','DOMAIN_NAME') }}"
+    server_build_path: "/var/www/{{ domain_name }}"
+    api_port: "{{lookup('env','API_PORT') }}"
+    swagger_port: "{{lookup('env','SWAGGER_PORT') }}"
+    short_sha: "{{ lookup('env','SHORT_SHA') }}"
+    image_prefix: "{{ lookup('env','DOCKER_IMAGE_PREFIX') }}"
+    container_router_name: "{{ lookup('env','DOCKER_ROUTER_CONTAINER_NAME') }}"
+    
+  tasks:
+    - name: Get the IP address of the green backend container
+      shell: |
+        docker inspect -f "{{ "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" }}" backend-{{ short_sha }}
+      register: green_api_container_ip
+
+    - name: Get the IP address of the green swagger container
+      shell: |
+        docker inspect -f "{{ "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" }}" swagger-{{ short_sha }}
+      register: green_swagger_container_ip
+
+    - name: Show the IP of the green API container
+      debug:
+        msg: "{{ green_api_container_ip.stdout }}"
+    
+    - name: Show the IP of the green SWAGGER container
+      debug:
+        msg: "{{ green_swagger_container_ip.stdout }}"
+
+    - name: Check if router container exists
+      shell: docker inspect {{ container_router_name }} --format "{{ "{{.Config.Env}}" }}"
+      register: router_inspect
+      ignore_errors: true
+
+    - name: Determine if router needs update
+      set_fact:
+        router_needs_update: >-
+          {{ router_inspect.failed
+            or ('API_PORT=' ~ api_port | string) not in router_inspect.stdout
+            or ('SWAGGER_PORT=' ~ swagger_port | string) not in router_inspect.stdout }}
+
+
+    - block:
+      - name: Create NGINX config directory
+        file:
+          path: "{{ server_build_path }}/nginx/conf.d"
+          state: directory
+          mode: '0755'
+
+      - name: Generate NGINX Config
+        template:
+          src: router-nginx.conf.j2
+          dest: "{{ server_build_path }}/nginx/conf.d/default.conf"
+        vars:
+          api_ip: "{{ green_api_container_ip.stdout }}"
+          swagger_ip: "{{ green_swagger_container_ip.stdout }}"
+          
+      - name: Run Router docker compose only if needed
+        shell: |
+          cd {{ server_build_path }}
+          API_PORT={{ api_port }} \
+          SWAGGER_PORT={{ swagger_port }} \
+          CONTAINER_NAME={{ container_router_name }} \
+          docker compose -f docker-compose.router.yml up -d --force-recreate     
+
+      when: router_needs_update
+
+    - block:
+      - name: Check the availability of the API green container
+        uri:
+          url: "http://{{ green_api_container_ip.stdout }}:{{ api_port }}/api/healthcheck"
+          method: GET
+          status_code: 200
+          timeout: 5
+
+      - name: Check the availability of the SWAGGER green container
+        uri:
+          url: "http://{{ green_swagger_container_ip.stdout }}:{{ swagger_port }}/docs"
+          method: GET
+          status_code: 200
+          timeout: 5
+
+      - name: Generate NGINX Config for switching traffic to the green container
+        template:
+          src: router-nginx.conf.j2
+          dest: "{{ server_build_path }}/nginx/conf.d/default.conf"
+        vars:
+          api_ip: "{{ green_api_container_ip.stdout }}"
+          swagger_ip: "{{ green_swagger_container_ip.stdout }}"
+
+      - name: Reload NGINX inside container
+        command: docker exec {{ container_router_name }} nginx -s reload
+
+      when: not router_needs_update
+

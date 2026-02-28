@@ -20,10 +20,16 @@ jobs:
       SECRET_AUTH_TOKEN: ${{secrets.SECRET_AUTH_TOKEN}}
       API_PORT: ${{ vars.API_PORT }}
       SWAGGER_PORT: ${{ vars.SWAGGER_PORT }}
-
+      DOCKER_IMAGE_PREFIX: "prod-burger-"
+      DOCKER_IMAGE_SERVER_PREFIX: "server-"
+      DOCKER_ROUTER_CONTAINER_NAME: "burger-router"
+  
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Set short SHA
+        run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
 
       - name: Add SSH key
         uses: webfactory/ssh-agent@v0.9.0
@@ -39,8 +45,14 @@ jobs:
       - name: Run Ansible [Prepare environment]
         run: ansible-playbook -i ansible/inventory.yml ansible/playbook_prepare_environment.yml
 
-      - name: Run Ansible [Build]
+      - name: Run Ansible [Clean up unnecessary containers and images]
+        run: ansible-playbook -i ansible/inventory.yml ansible/playbook_cleanup_docker.yml
+
+      - name: Run Ansible [Build servers]
         run: ansible-playbook -i ansible/inventory.yml ansible/playbook_build.yml
+
+      - name: Run Ansible [Routing]
+        run: ansible-playbook -i ansible/inventory.yml ansible/playbook_router.yml
 
       - name: Run Ansible [Configure Nginx]
         run: ansible-playbook -i ansible/inventory.yml ansible/playbook_nginx.yml

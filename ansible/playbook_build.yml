@@ -1,4 +1,4 @@
-- name: Prepare environment
+- name: Build Servers
   hosts: web1
   become: yes
   vars:
@@ -8,7 +8,11 @@
     database_url: "{{ lookup('env','DATABASE_URL') }}"
     api_port: "{{lookup('env','API_PORT') }}"
     swagger_port: "{{lookup('env','SWAGGER_PORT') }}"
-
+    short_sha: "{{ lookup('env','SHORT_SHA') }}"
+    network_name: "prod_burger_network"
+    image_prefix: "{{ lookup('env','DOCKER_IMAGE_PREFIX') }}"
+    server_prefix: "{{ lookup('env','DOCKER_IMAGE_SERVER_PREFIX') }}"
+    
   tasks:
     - name: Create .env file
       copy:
@@ -16,17 +20,26 @@
           SECRET_AUTH_TOKEN={{ secret_auth_token }}
           DATABASE_URL={{ database_url }}
           API_PORT={{ api_port }}
+          SHORT_SHA={{ short_sha }}
         dest: "{{ server_build_path }}/.env"
-        mode: '0600'
+        mode: "0600"
 
     - name: Create .envSwagger file
       copy:
         content: |
           SWAGGER_PORT={{ swagger_port }}
         dest: "{{ server_build_path }}/.envSwagger"
-        mode: '0600'
+        mode: "0600"
+
+    - name: Create Docker network
+      shell: |
+        docker network inspect {{ network_name }} >/dev/null 2>&1 || docker network create {{ network_name }}
 
     - name: Run Docker Compose
       shell: |
         cd {{ server_build_path }}
-        API_PORT={{ api_port }} SWAGGER_PORT={{ swagger_port }} docker compose -p prod-burger up -d --build --remove-orphans
+        SHORT_SHA={{ short_sha }} \
+        API_PORT={{ api_port }} \
+        SWAGGER_PORT={{ swagger_port }} \
+        docker compose -p {{ image_prefix }}{{ server_prefix }}{{ short_sha }} up -d --build --remove-orphans
+

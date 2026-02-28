@@ -1,19 +1,22 @@
 - name: Prepare environment
   hosts: web1
   become: yes
+  vars:
+    image_prefix: "{{ lookup('env','DOCKER_IMAGE_PREFIX') }}"
+    image_server_prefix: "{{ lookup('env','DOCKER_IMAGE_SERVER_PREFIX') }}"
 
   tasks:
-    - name: Check if Docker is installed 
+    - name: Check if Docker is installed
       block:
-      - name: Try to run docker command
-        command: docker --version
-        register: docker_version
-        ignore_errors: true
-        failed_when: false
+        - name: Try to run docker command
+          command: docker --version
+          register: docker_version
+          ignore_errors: true
+          failed_when: false
 
-      - name: Show the variable
-        debug:
-          msg: "Docker installed: {{ docker_version.rc == 0 }}"
+        - name: Show the variable
+          debug:
+            msg: "Docker installed: {{ docker_version.rc == 0 }}"
 
     - name: Install Docker
       shell: |
@@ -23,17 +26,17 @@
           usermod -aG docker {{ ansible_user }}
         fi
 
-    - name: Check if Docker Compose is installed 
+    - name: Check if Docker Compose is installed
       block:
-      - name: Try to run docker compose command
-        command: docker compose version
-        register: docker_compose_version
-        ignore_errors: true
-        failed_when: false
+        - name: Try to run docker compose command
+          command: docker compose version
+          register: docker_compose_version
+          ignore_errors: true
+          failed_when: false
 
-      - name: Show the variable
-        debug:
-          msg: "Docker Compose installed: {{ docker_compose_version.rc == 0 }}"
+        - name: Show the variable
+          debug:
+            msg: "Docker Compose installed: {{ docker_compose_version.rc == 0 }}"
 
     - name: Install Docker Compose
       shell: |
@@ -41,4 +44,3 @@
           curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           chmod +x /usr/local/bin/docker-compose
         fi
-
