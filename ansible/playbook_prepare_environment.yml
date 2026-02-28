@@ -70,7 +70,7 @@
         docker images --format "{{ "{{.ID}} {{.Repository}}" }}" \ \
         | grep "{{image_prefix}}" \
         | awk '{print $1}' \
-        | xargs -r docker rm -f
+        | xargs -r docker rmi -f
       ignore_errors: true
 
   #  | grep -v "{{ router_hash.stdout | default('') }}" \
