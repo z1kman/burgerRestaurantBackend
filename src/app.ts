@@ -6,11 +6,13 @@ import { notificationsRouter } from "./routes/notifications";
 import { basketRouter } from "./routes/basket";
 import { errorHandler } from "./middlewares/errors";
 import { langMiddleware } from "./middlewares/langMiddleware";
+import { healthcheckRouter } from "./routes/healthcheck";
 
 const app = express();
 app.use(express.json());
 app.use(langMiddleware);
 
+app.use("/api/healthcheck", healthcheckRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/product", productRouter);
 app.use("/api/notifications", notificationsRouter);

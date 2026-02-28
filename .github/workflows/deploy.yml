@@ -52,6 +52,5 @@ jobs:
       - name: Run Ansible [Routing]
         run: ansible-playbook -i ansible/inventory.yml ansible/playbook_router.yml
 
-
       - name: Run Ansible [Configure Nginx]
         run: ansible-playbook -i ansible/inventory.yml ansible/playbook_nginx.yml

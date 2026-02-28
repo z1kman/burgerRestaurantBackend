@@ -21,6 +21,7 @@
           SECRET_AUTH_TOKEN={{ secret_auth_token }}
           DATABASE_URL={{ database_url }}
           API_PORT={{ api_port }}
+          SHORT_SHA={{ short_sha }}
         dest: "{{ server_build_path }}/.env"
         mode: "0600"
 
