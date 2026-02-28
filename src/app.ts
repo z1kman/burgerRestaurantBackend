@@ -12,7 +12,7 @@ const app = express();
 app.use(express.json());
 app.use(langMiddleware);
 
-app.use("/api/healthcheck", healthcheckRouter);
+// app.use("/api/healthcheck", healthcheckRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/product", productRouter);
 app.use("/api/notifications", notificationsRouter);
