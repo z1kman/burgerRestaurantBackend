@@ -19,7 +19,6 @@
       set_fact:
         router_needs_update: >-
           {{ router_inspect.failed
-            or ('TARGET_SHA={{ short_sha }}' not in router_inspect.stdout)
             or ('API_PORT={{ api_port }}' not in router_inspect.stdout) }}
 
 
