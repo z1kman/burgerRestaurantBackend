@@ -50,29 +50,3 @@
         SWAGGER_PORT={{ swagger_port }} \
         docker compose -p {{ image_prefix }}{{ short_sha }} up -d --build --remove-orphans
 
-    - name: Get active backend hash from router
-      shell: |
-        docker inspect router \
-          --format '{{range .Config.Env}}{{println .}}{{end}}' \
-          | grep TARGET_CONTAINER || echo "" \
-          | cut -d'=' -f2 \
-          | sed 's/backend-//'
-      register: router_hash
-      ignore_errors:
-        true
-
-    # - name: Clean unecessary containers
-    #   shell: |
-    #     docker ps -a --format "{{.ID}} {{.Image}}" \
-    #     | grep "${image_prefix}" \
-    #     | grep -v "$KEEP_SHA" \
-    #     | awk '{print $1}' \
-    #     | xargs -r docker rm -f
-
-    # - name: Clean unecessary images
-    #   shell: |
-    #     docker ps -a --format "{{.ID}} {{.Image}}" \
-    #     | grep "${image_prefix}" \
-    #     | grep -v "$KEEP_SHA" \
-    #     | awk '{print $1}' \
-    #     | xargs -r docker rm -f
