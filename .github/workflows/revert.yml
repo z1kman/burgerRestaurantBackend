@@ -16,10 +16,12 @@ on:
           - production
           - staging
 
+concurrency:
+  group: deploy-main
+  cancel-in-progress: true
 
 jobs:
   deploy:
-    name: 🚀 Deploy
     runs-on: ubuntu-latest
     env:
       SERVER_IP: ${{ vars.SERVER_IP }}
