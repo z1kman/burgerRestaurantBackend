@@ -56,7 +56,9 @@
     #   ignore_errors: true
 
     - name: C11
-      shell: docker ps -a 
+      shell: |
+        docker ps -a  \
+        | grep "{{image_prefix}}"
       register: docker_ps
 
     - name: Debug 1
@@ -64,12 +66,15 @@
         msg: "aaa: {{  docker_ps.stdout }}"
 
     - name: c22
-      shell: docker ps -a 
+      shell: |
+        docker ps -a  \
+        | grep "{{image_prefix}}"
+        | awk '{print $1}'
       register: docker_ps
 
     - name: Debug 2
       debug:
-        msg: "bbb: {{image_prefix}}"
+        msg: "bbb: {{  docker_ps.stdout }}"
 
     - name: Clean unecessary containers
       shell: |
