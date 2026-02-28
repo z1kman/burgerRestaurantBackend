@@ -31,12 +31,13 @@
     - name: Create Docker network
       shell: |
         docker network inspect {{ network_name }} >/dev/null 2>&1 || docker network create {{ network_name }}
+    
     - name: Run Docker Compose
       shell: |
         cd {{ server_build_path }}
-        SHORT_SHA={{ short_sha }} \ 
-        API_PORT={{ api_port }} \
-        SWAGGER_PORT={{ swagger_port }} \
-        NETWORK_NAME={{ network_name }} \
+        SHORT_SHA={{ short_sha }}\
+        API_PORT={{ api_port }}\
+        SWAGGER_PORT={{ swagger_port }}\
+        NETWORK_NAME={{ network_name }}\
         docker compose -p prod-burger up -d --build --remove-orphans
 

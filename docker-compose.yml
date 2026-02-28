@@ -7,7 +7,7 @@ services:
         APP_PORT: ${API_PORT}
     container_name: backend-${SHORT_SHA}
     networks:
-      - "${NETWORK_NAME}"
+      - ${NETWORK_NAME}
     expose:
       - "${API_PORT}"
     env_file:
@@ -36,5 +36,5 @@ services:
 
 
 networks:
-  ${ NETWORK_NAME }:
+  ${NETWORK_NAME}:
     external: true
