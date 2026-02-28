@@ -2,7 +2,7 @@ version: "3.9"
 services:
   nginx-router:
     image: nginx:alpine
-    container_name: burger-router
+    container_name: ${ CONTAINER_NAME }
     restart: always
     environment:
       - API_PORT

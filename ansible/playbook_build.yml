@@ -13,7 +13,6 @@
     image_prefix: "{{ lookup('env','DOCKER_IMAGE_PREFIX') }}"
     server_prefix: "{{ lookup('env','DOCKER_IMAGE_SERVER_PREFIX') }}"
     
-
   tasks:
     - name: Create .env file
       copy:

@@ -8,6 +8,7 @@
     swagger_port: "{{lookup('env','SWAGGER_PORT') }}"
     short_sha: "{{ lookup('env','SHORT_SHA') }}"
     image_prefix: "{{ lookup('env','DOCKER_IMAGE_PREFIX') }}"
+    container_router_name: "{{ lookup('env','DOCKER_ROUTER_CONTAINER_NAME') }}"
     
   tasks:
     - name: Get the IP address of the green container
@@ -15,8 +16,12 @@
         docker inspect -f "{{ "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" }}" backend-{{ short_sha }}
       register: green_container_ip
 
+    - name: Show the IP of the green container
+      debug:
+        msg: "{{ green_container_ip.stdout }}"
+
     - name: Check if router container exists
-      shell: docker inspect burger-router --format "{{ "{{.Config.Env}}" }}"
+      shell: docker inspect {{ container_router_name }} --format "{{ "{{.Config.Env}}" }}"
       register: router_inspect
       ignore_errors: true
 
@@ -44,6 +49,7 @@
         shell: |
           cd {{ server_build_path }}
           API_PORT={{ api_port }} \
+          CONTAINER_NAME={{ container_router_name }}
           docker compose -f docker-compose.router.yml up -d --force-recreate     
 
       when: router_needs_update
@@ -64,7 +70,7 @@
           api_ip: "{{ green_container_ip.stdout }}"
 
       - name: Reload NGINX inside container
-        command: docker exec burger-router nginx -s reload
+        command: docker exec {{ container_router_name }} nginx -s reload
 
       when: not router_needs_update
 

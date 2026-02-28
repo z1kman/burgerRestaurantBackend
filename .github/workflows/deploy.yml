@@ -1,9 +1,6 @@
 name: Deploy
 
 on:
-  push:
-    branches:
-      - '**' 
   pull_request:
     types: [opened, reopened, synchronize] 
 
@@ -24,6 +21,7 @@ jobs:
       SWAGGER_PORT: ${{ vars.SWAGGER_PORT }}
       DOCKER_IMAGE_PREFIX: "prod-burger-"
       DOCKER_IMAGE_SERVER_PREFIX: "server-"
+      DOCKER_ROUTER_CONTAINER_NAME: "burger-router"
   
     steps:
       - name: Checkout code
@@ -45,6 +43,9 @@ jobs:
       
       - name: Run Ansible [Prepare environment]
         run: ansible-playbook -i ansible/inventory.yml ansible/playbook_prepare_environment.yml
+
+      - name: Run Ansible [Clean up unnecessary containers and images]
+        run: ansible-playbook -i ansible/inventory.yml ansible/playbook_cleanup_docker.yml
 
       - name: Run Ansible [Build servers]
         run: ansible-playbook -i ansible/inventory.yml ansible/playbook_build.yml
