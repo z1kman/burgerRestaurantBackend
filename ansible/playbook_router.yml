@@ -76,7 +76,7 @@
 
       - name: Check the availability of the SWAGGER green container
         uri:
-          url: "http://{{ green_swagger_container_ip.stdout }}:{{ api_port }}/docs"
+          url: "http://{{ green_swagger_container_ip.stdout }}:{{ swagger_port }}/docs"
           method: GET
           status_code: 200
           timeout: 5
