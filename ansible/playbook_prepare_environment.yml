@@ -54,7 +54,7 @@
       register: router_hash
       ignore_errors: true
 
-    - name: Show the hash of the blue image/container 
+    - name: Show the hash of the blue image/container
       debug:
         msg: "Docker Compose installed: {{ router_hash.stdout }}"
 
@@ -66,7 +66,11 @@
         | awk '{print $1}' \
         | xargs -r docker rm -f
       ignore_errors: true
+      register: containers_cleanup_result
 
+    - name: Show the result of containers cleanup
+      debug:
+        msg: "Docker Compose installed: {{ containers_cleanup_result.stdout }}"
 
     - name: Clean unecessary images
       shell: |
@@ -76,6 +80,11 @@
         | awk '{print $1}' \
         | xargs -r docker rmi -f
       ignore_errors: true
+      register: images_cleanup_result
+
+    - name: Show the result of images cleanup
+      debug:
+        msg: "Docker Compose installed: {{ images_cleanup_result.stdout }}"
 
   #  | grep -v "{{ router_hash.stdout | default('') }}" \
         # | grep -v "{{ router_hash.stdout | default('') }}" \
