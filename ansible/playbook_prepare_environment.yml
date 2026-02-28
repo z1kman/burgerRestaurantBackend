@@ -56,7 +56,7 @@
 
     - name: Clean unecessary containers
       shell: |
-        docker ps -a --format "{{ "{{.ID}} {{.Image}}" }}" \
+        docker ps -a  \
         | grep "{{image_prefix}}" \
         | grep -v "{{ router_hash.stdout | default('') }}" \
         | awk '{print $1}' \
@@ -65,7 +65,7 @@
 
     - name: Clean unecessary images
       shell: |
-        docker images --format "{{ "{{.ID}} {{.Repository}}" }}" \
+        docker images \
         | grep "{{image_prefix}}" \
         | grep -v "{{ router_hash.stdout | default('') }}" \
         | awk '{print $1}' \
