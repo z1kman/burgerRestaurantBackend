@@ -8,7 +8,7 @@
     database_url: "{{ lookup('env','DATABASE_URL') }}"
     api_port: "{{lookup('env','API_PORT') }}"
     swagger_port: "{{lookup('env','SWAGGER_PORT') }}"
-    short_sha: "{{ lookup('env','SHORT_SHA') }}" 
+    short_sha: "{{ lookup('env','SHORT_SHA') }}"
     network_name: "prod_burger_network"
     image_prefix: "prod-burger-"
 
@@ -20,19 +20,19 @@
           DATABASE_URL={{ database_url }}
           API_PORT={{ api_port }}
         dest: "{{ server_build_path }}/.env"
-        mode: '0600'
+        mode: "0600"
 
     - name: Create .envSwagger file
       copy:
         content: |
           SWAGGER_PORT={{ swagger_port }}
         dest: "{{ server_build_path }}/.envSwagger"
-        mode: '0600'
+        mode: "0600"
 
     - name: Create Docker network
       shell: |
         docker network inspect {{ network_name }} >/dev/null 2>&1 || docker network create {{ network_name }}
-    
+
     - name: Debug - show networks
       shell: docker network ls | grep {{ network_name }} || echo "Network not found"
       register: network_check
@@ -50,6 +50,16 @@
         SWAGGER_PORT={{ swagger_port }} \
         docker compose -p {{ image_prefix }}{{ short_sha }} up -d --build --remove-orphans
 
+    - name: Get active backend hash from router
+      shell: |
+        docker inspect router \
+          --format '{{range .Config.Env}}{{println .}}{{end}}' \
+          | grep TARGET_CONTAINER || echo "" \
+          | cut -d'=' -f2 \
+          | sed 's/backend-//'
+      register: router_hash
+      ignore_errors:
+        true
 
     # - name: Clean unecessary containers
     #   shell: |
@@ -66,4 +76,3 @@
     #     | grep -v "$KEEP_SHA" \
     #     | awk '{print $1}' \
     #     | xargs -r docker rm -f
-
