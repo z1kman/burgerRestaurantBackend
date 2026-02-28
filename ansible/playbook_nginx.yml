@@ -93,10 +93,10 @@
         state: started
         enabled: yes
 
-    - name: Call Restart Nginx handler
-      command: /bin/true
-      notify: Restart Nginx
-      changed_when: true
+    # - name: Call Restart Nginx handler
+    #   command: /bin/true
+    #   notify: Restart Nginx
+    #   changed_when: true
       
   handlers:
     - name: Restart Nginx
