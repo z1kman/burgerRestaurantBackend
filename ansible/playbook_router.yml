@@ -19,7 +19,7 @@
       set_fact:
         router_needs_update: >-
           {{ router_inspect.failed
-            or ('API_PORT={{ api_port }}' not in router_inspect.stdout) }}
+            or ('API_PORT=' ~ api_port | string) not in router_inspect.stdout }}
 
 
     - name: Run Router docker compose only if needed
