@@ -10,6 +10,11 @@
     image_prefix: "{{ lookup('env','DOCKER_IMAGE_PREFIX') }}"
     
   tasks:
+    - name: Get the IP address of the green container
+      shell: |
+        docker inspect -f "{{ "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" }}" backend-{{ short_sha }}
+      register: green_container_ip
+
     - name: Check if router container exists
       shell: docker inspect burger-router --format "{{ "{{.Config.Env}}" }}"
       register: router_inspect
@@ -21,22 +26,25 @@
           {{ router_inspect.failed
             or ('API_PORT=' ~ api_port | string) not in router_inspect.stdout }}
 
+    - block:
+      - name: Generate NGINX Config
+        template:
+          src: router-nginx.conf.j2
+          dest: "{{ server_build_path }}/nginx/conf.d/default.conf"
+        vars:
+          api_ip: "{{ green_container_ip.stdout }}"
+          api_port: "{{ api_port }}"
 
-    - name: Run Router docker compose only if needed
-      shell: |
-        cd {{ server_build_path }}
-        TARGET_SHA={{ short_sha }} \
-        API_PORT={{ api_port }} \
-        docker compose -f docker-compose.router.yml up -d --force-recreate
+      - name: Run Router docker compose only if needed
+        shell: |
+          cd {{ server_build_path }}
+          API_PORT={{ api_port }} \
+          docker compose -f docker-compose.router.yml up -d --force-recreate
+
+
       when: router_needs_update
 
-
     - block:
-      - name: Get the IP address of the green container
-        shell: |
-          docker inspect -f "{{ "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" }}" backend-{{ short_sha }}
-        register: green_container_ip
-
       - name: Check the availability of the green container
         uri:
             url: "http://{{ green_container_ip.stdout }}:{{ api_port }}/api/healthcheck"
@@ -44,12 +52,16 @@
             status_code: 200
             timeout: 5
 
-      - name: Switch traffic to the green container
-        shell: |
-          cd {{ server_build_path }}
-          TARGET_SHA={{ short_sha }} \
-          API_PORT={{ api_port }} \
-          docker compose -f docker-compose.router.yml up -d
-      
+      - name: Generate NGINX Config for switching traffic to the green container
+        template:
+          src: router-nginx.conf.j2
+          dest: "{{ server_build_path }}/nginx/conf.d/default.conf"
+        vars:
+          api_ip: "{{ green_container_ip.stdout }}"
+          api_port: "{{ api_port }}"
+
+      - name: Reload NGINX inside container
+        command: docker exec burger-router nginx -s reload
+
       when: not router_needs_update
 

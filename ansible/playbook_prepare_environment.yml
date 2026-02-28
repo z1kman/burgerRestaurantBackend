@@ -6,17 +6,17 @@
     image_server_prefix: "{{ lookup('env','DOCKER_IMAGE_SERVER_PREFIX') }}"
 
   tasks:
-    - name: Check if Docker is installed 
+    - name: Check if Docker is installed
       block:
-      - name: Try to run docker command
-        command: docker --version
-        register: docker_version
-        ignore_errors: true
-        failed_when: false
+        - name: Try to run docker command
+          command: docker --version
+          register: docker_version
+          ignore_errors: true
+          failed_when: false
 
-      - name: Show the variable
-        debug:
-          msg: "Docker installed: {{ docker_version.rc == 0 }}"
+        - name: Show the variable
+          debug:
+            msg: "Docker installed: {{ docker_version.rc == 0 }}"
 
     - name: Install Docker
       shell: |
@@ -26,17 +26,17 @@
           usermod -aG docker {{ ansible_user }}
         fi
 
-    - name: Check if Docker Compose is installed 
+    - name: Check if Docker Compose is installed
       block:
-      - name: Try to run docker compose command
-        command: docker compose version
-        register: docker_compose_version
-        ignore_errors: true
-        failed_when: false
+        - name: Try to run docker compose command
+          command: docker compose version
+          register: docker_compose_version
+          ignore_errors: true
+          failed_when: false
 
-      - name: Show the variable
-        debug:
-          msg: "Docker Compose installed: {{ docker_compose_version.rc == 0 }}"
+        - name: Show the variable
+          debug:
+            msg: "Docker Compose installed: {{ docker_compose_version.rc == 0 }}"
 
     - name: Install Docker Compose
       shell: |
@@ -45,23 +45,30 @@
           chmod +x /usr/local/bin/docker-compose
         fi
 
-    - name: Get active backend hash from router
+    - name: Get blue backend IP from router
       shell: |
-        docker inspect burger-router --format "{{ "{{range .Config.Env}}{{println .}}{{end}}" }}" \
-        | grep TARGET_SHA \
-        | cut -d'=' -f2
-      register: router_hash
+        docker exec -it burger-router sh -c "grep 'proxy_pass' /etc/nginx/conf.d/default.conf | awk -F'[/:]' '{print \$4}'"
+      register: router_ip
+      ignore_errors: true
+
+    - name: Get blue backend SHA from router
+      shell: |
+        | docker ps -q  \
+        | xargs -I{} docker inspect -f "{{ "{{.Name}} {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" }}" {} \
+        | grep {{ router_ip.stdout }}
+        | awk '{split($1,a,"-"); print a[2]}'
+      register: router_sha
       ignore_errors: true
 
     - name: Show the hash of the blue image/container
       debug:
-        msg: "{{ router_hash.stdout }}"
+        msg: "{{ router_sha.stdout }}"
 
     - name: Clean unecessary containers
       shell: |
         docker ps -a --format "{{ "{{.ID}} {{.Image}}" }}" \
         | grep "{{image_prefix}}{{image_server_prefix}}" \
-        | grep -v "{{ router_hash.stdout | default('') }}" \
+        | grep -v "{{ router_sha.stdout | default('') }}" \
         | awk '{print $1}' \
         | xargs -r docker rm -f
       ignore_errors: true
@@ -75,7 +82,7 @@
       shell: |
         docker images --format "{{ "{{.ID}} {{.Repository}}" }}" \ \
         | grep "{{image_prefix}}{{image_server_prefix}}" \
-        | grep -v "{{ router_hash.stdout | default('') }}" \
+        | grep -v "{{ router_sha.stdout | default('') }}" \
         | awk '{print $1}' \
         | xargs -r docker rmi -f
       ignore_errors: true
