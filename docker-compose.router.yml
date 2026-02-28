@@ -6,10 +6,12 @@ services:
     restart: always
     environment:
       - API_PORT
+      - SWAGGER_PORT
     networks:
       - prod_burger_network
     ports:
       - "${API_PORT}:${API_PORT}"
+      - "${SWAGGER_PORT}:${SWAGGER_PORT}"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
 

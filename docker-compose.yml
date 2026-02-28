@@ -18,21 +18,22 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
   
-  # swagger:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile.swagger
-  #     args:
-  #       APP_PORT: ${SWAGGER_PORT}
-  #   container_name: 1swagger
-  #   network_mode: bridge
-  #   ports:
-  #     - "${SWAGGER_PORT}:${SWAGGER_PORT}"
-  #   env_file:
-  #     - .envSwagger
-  #   volumes:
-  #     - /etc/localtime:/etc/localtime:ro 
-  #   restart: unless-stopped 
+  swagger:
+    build:
+      context: .
+      dockerfile: Dockerfile.swagger
+      args:
+        APP_PORT: ${SWAGGER_PORT}
+    container_name: swagger-${SHORT_SHA}
+    networks:
+      - prod_burger_network
+    ports:
+      - "${SWAGGER_PORT}:${SWAGGER_PORT}"
+    env_file:
+      - .envSwagger
+    volumes:
+      - /etc/localtime:/etc/localtime:ro 
+    restart: unless-stopped 
 
 
 
