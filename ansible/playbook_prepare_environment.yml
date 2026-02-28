@@ -53,7 +53,7 @@
 
     - name: Get blue backend SHA from router
       shell: |
-        | docker ps -q  \
+        docker ps -q  \
         | xargs -I{} docker inspect -f "{{ "{{.Name}} {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" }}" {} \
         | grep {{ router_ip.stdout }}
         | awk '{split($1,a,"-"); print a[2]}'
