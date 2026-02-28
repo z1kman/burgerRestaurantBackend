@@ -50,6 +50,7 @@
         SWAGGER_PORT={{ swagger_port }} \
         docker compose -p {{ image_prefix }}{{ short_sha }} up -d --build --remove-orphans
 
+
     # - name: Clean unecessary containers
     #   shell: |
     #     docker ps -a --format "{{.ID}} {{.Image}}" \
