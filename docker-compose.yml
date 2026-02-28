@@ -28,14 +28,12 @@ services:
     networks:
       - prod_burger_network
     ports:
-      - "${SWAGGER_PORT}:${SWAGGER_PORT}"
+      - "${SWAGGER_PORT}"
     env_file:
       - .envSwagger
     volumes:
       - /etc/localtime:/etc/localtime:ro 
     restart: unless-stopped 
-
-
 
 networks:
   prod_burger_network:
