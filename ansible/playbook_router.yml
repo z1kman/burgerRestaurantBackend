@@ -62,7 +62,6 @@
           dest: "{{ server_build_path }}/nginx/conf.d/default.conf"
         vars:
           api_ip: "{{ green_container_ip.stdout }}"
-          api_port: "{{ api_port }}"
 
       - name: Reload NGINX inside container
         command: docker exec burger-router nginx -s reload
