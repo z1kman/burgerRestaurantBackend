@@ -7,7 +7,7 @@
     local_temp_build_path: "/tmp/build.tar.gz"
     server_build_path: "/var/www/{{ domain_name }}"
     server_temp_archive: "{{ server_build_path }}/build.tar.gz"
-    short_sha: "{{ lookup('env','SHORT_SHA')"
+    short_sha: "{{ lookup('env','SHORT_SHA') }}" 
     
   tasks:
     - name: Show the variable
