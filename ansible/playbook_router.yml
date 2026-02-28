@@ -31,10 +31,25 @@
       when: router_needs_update
 
 
-    # - name: Run Router docker compose
-    #   shell: |
-    #     cd {{ server_build_path }}
-    #     TARGET_SHA={{ short_sha }} \
-    #     API_PORT={{ api_port }} \
-    #     docker compose -p {{image_prefix}} -f docker-compose.router.yml up -d
+    - block:
+      - name: Get the IP address of the green container
+        shell: |
+          docker inspect -f "{{ "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" }}" backend-{{ short_sha }}
+        register: green_container_ip
+        
+      - name: Check the availability of the green container
+        uri:
+            url: "http://{{ green_container_ip.stdout }}:{{ api_port }}/api/products"
+            method: GET
+            status_code: 200
+            timeout: 5
+
+      - name: Switch traffic to the green container
+        shell: |
+          cd {{ server_build_path }}
+          TARGET_SHA={{ short_sha }} \
+          API_PORT={{ api_port }} \
+          docker compose -f docker-compose.router.yml up -d --force-recreate
+      
+      when: not router_needs_update
 
