@@ -22,7 +22,7 @@ jobs:
       SECRET_AUTH_TOKEN: ${{secrets.SECRET_AUTH_TOKEN}}
       API_PORT: ${{ vars.API_PORT }}
       SWAGGER_PORT: ${{ vars.SWAGGER_PORT }}
-      DOCKER_IMAGE_PREFIX: "prod-backend-"
+      DOCKER_IMAGE_PREFIX: "prod-burger-"
   
     steps:
       - name: Checkout code

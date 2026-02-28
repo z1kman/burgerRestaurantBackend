@@ -55,27 +55,6 @@
     #   register: router_hash
     #   ignore_errors: true
 
-    - name: C11
-      shell: |
-        docker ps -a  \
-        | grep "{{image_prefix}}"
-      register: docker_ps
-
-    - name: Debug 1
-      debug:
-        msg: "aaa: {{  docker_ps.stdout }}"
-
-    - name: c22
-      shell: |
-        docker ps -a  \
-        | grep "{{image_prefix}}" \
-        | awk '{print $1}'
-      register: docker_ps
-
-    - name: Debug 2
-      debug:
-        msg: "bbb: {{  docker_ps.stdout }}"
-
     - name: Clean unecessary containers
       shell: |
         docker ps -a  \
