@@ -49,7 +49,7 @@
           cd {{ server_build_path }}
           TARGET_SHA={{ short_sha }} \
           API_PORT={{ api_port }} \
-          docker compose -f docker-compose.router.yml up -d --force-recreate
+          docker compose -f docker-compose.router.yml up -d
       
       when: not router_needs_update
 
