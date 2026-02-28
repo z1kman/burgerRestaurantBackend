@@ -9,6 +9,7 @@
     api_port: "{{lookup('env','API_PORT') }}"
     swagger_port: "{{lookup('env','SWAGGER_PORT') }}"
     short_sha: "{{ lookup('env','SHORT_SHA') }}" 
+    network_name: "prod_burger_network"
 
   tasks:
     - name: Create .env file
@@ -27,8 +28,15 @@
         dest: "{{ server_build_path }}/.envSwagger"
         mode: '0600'
 
+    - name: Create Docker network
+      shell: |
+        docker network inspect {{ network_name }} >/dev/null 2>&1 || docker network create {{ network_name }}
     - name: Run Docker Compose
       shell: |
         cd {{ server_build_path }}
-        SHORT_SHA={{ short_sha }} API_PORT={{ api_port }} SWAGGER_PORT={{ swagger_port }} docker compose -p prod-burger up -d --build --remove-orphans
+        SHORT_SHA={{ short_sha }} \ 
+        API_PORT={{ api_port }} \
+        SWAGGER_PORT={{ swagger_port }} \
+        NETWORK_NAME={{ network_name }}
+        docker compose -p prod-burger up -d --build --remove-orphans
 
