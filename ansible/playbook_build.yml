@@ -50,3 +50,10 @@
         SWAGGER_PORT={{ swagger_port }} \
         docker compose -p {{ image_prefix }}{{ short_sha }} up -d --build --remove-orphans
 
+    - name: Run Router docker compose
+      shell: |
+        cd {{ server_build_path }}
+        TARGET_SHA={{ short_sha }} \
+        API_PORT={{ api_port }} \
+        docker compose -f docker-compose.router.yml up -d
+
