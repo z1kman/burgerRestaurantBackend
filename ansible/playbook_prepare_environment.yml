@@ -45,6 +45,7 @@
           chmod +x /usr/local/bin/docker-compose
         fi
 
+
     - name: Get blue backend IP from router
       shell: |
         docker exec -it burger-router sh -c "grep 'proxy_pass' /etc/nginx/conf.d/default.conf | awk -F'[/:]' '{print \$4}'"
