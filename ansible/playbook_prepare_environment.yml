@@ -68,7 +68,7 @@
     - name: c22
       shell: |
         docker ps -a  \
-        | grep "{{image_prefix}}"
+        | grep "{{image_prefix}}" \
         | awk '{print $1}'
       register: docker_ps
 
