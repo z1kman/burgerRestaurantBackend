@@ -29,9 +29,9 @@
     - block:
       - name: Create NGINX config directory
         file:
-        path: "{{ server_build_path }}/nginx/conf.d"
-        state: directory
-        mode: '0755'
+          path: "{{ server_build_path }}/nginx/conf.d"
+          state: directory
+          mode: '0755'
 
       - name: Generate NGINX Config
         template:
@@ -45,7 +45,7 @@
           cd {{ server_build_path }}
           API_PORT={{ api_port }} \
           docker compose -f docker-compose.router.yml up -d --force-recreate     
-          
+
       when: router_needs_update
 
     - block:

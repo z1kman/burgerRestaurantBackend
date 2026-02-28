@@ -51,6 +51,10 @@
       register: router_ip
       ignore_errors: true
 
+    - name: Show the IP of the blue image/container
+      debug:
+        msg: "{{ router_ip.stdout }}"
+
     - name: Get blue backend SHA from router
       shell: |
         docker ps -q \
