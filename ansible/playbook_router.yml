@@ -28,7 +28,7 @@
         cd {{ server_build_path }}
         TARGET_SHA={{ short_sha }} \
         API_PORT={{ api_port }} \
-        docker compose -p {{image_prefix}} -f docker-compose.router.yml up -d --build
+        docker compose -p {{image_prefix}} -f docker-compose.router.yml up -d --remove-orphans
       when: router_needs_update
 
 
