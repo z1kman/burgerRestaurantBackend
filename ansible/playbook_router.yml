@@ -27,6 +27,12 @@
             or ('API_PORT=' ~ api_port | string) not in router_inspect.stdout }}
 
     - block:
+      - name: Create NGINX config directory
+        file:
+        path: "{{ server_build_path }}/nginx/conf.d"
+        state: directory
+        mode: '0755'
+
       - name: Generate NGINX Config
         template:
           src: router-nginx.conf.j2
@@ -38,9 +44,8 @@
         shell: |
           cd {{ server_build_path }}
           API_PORT={{ api_port }} \
-          docker compose -f docker-compose.router.yml up -d --force-recreate
-
-
+          docker compose -f docker-compose.router.yml up -d --force-recreate     
+          
       when: router_needs_update
 
     - block:
