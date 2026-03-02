@@ -25,6 +25,7 @@ jobs:
       DOCKER_ROUTER_CONTAINER_NAME: "burger-router"
       DOCKER_BACKEND_NAME: "backend"
       DOCKER_SWAGGER_NAME: "swagger"
+      VERSION_FILE_NAME: "version.env"
   
     steps:
       - name: Checkout code

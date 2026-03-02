@@ -1,0 +1,28 @@
+- name: Switch blue/green version
+  hosts: web1
+  become: yes
+  vars:
+    domain_name: "{{ lookup('env','DOMAIN_NAME') }}"
+    server_build_path: "/var/www/{{ domain_name }}"
+    version_file_name: "{{ lookup('env','VERSION_FILE_NAME') }}"
+    version_file_path: "{{ server_build_path }}/{{ version_file_name }}"
+
+  tasks:
+    - name: Read version file
+      slurp:
+        src: "{{ version_file_path }}"
+      register: versions_file_raw
+
+    - name: Parse version file
+      set_fact:
+        prev_stable: "{{ item | regex_replace('^PREV_STABLE=\"(.*)\"$', '\\1') }}"
+        new: "{{ item | regex_replace('^NEW=\"(.*)\"$', '\\1') }}"
+      loop: "{{ (versions_file_raw.content | b64decode).split('\n') }}"
+      when: 
+        - not versions_file_raw.failed
+        - item | length > 0
+        - item is match('^[A-Z_]+=.*')
+
+    - name: Show versions 
+      debug:
+        msg: "prev_stable={{ prev_stable }}, new={{ new }}"

@@ -14,6 +14,7 @@
     network_name: "prod_burger_network"
     image_prefix: "{{ lookup('env','DOCKER_IMAGE_PREFIX') }}"
     server_prefix: "{{ lookup('env','DOCKER_IMAGE_SERVER_PREFIX') }}"
+    version_file_name: "{{ lookup('env','VERSION_FILE_NAME') }}"
     
   tasks:
     - include_tasks: tasks/get_blue_data.yml
@@ -56,6 +57,6 @@
         content: |
           PREV_STABLE={{ blue_sha }}
           NEW={{ current_sha }}
-        dest: "{{ server_build_path }}/version.env"
+        dest: "{{ server_build_path }}/{{ version_file_name }}"
         mode: "0600"
 
