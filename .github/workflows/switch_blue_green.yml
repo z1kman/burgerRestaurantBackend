@@ -1,0 +1,31 @@
+name: Switch blue/green
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Choose deployment action'
+        required: true
+        type: choice
+        options:
+          - deploy_new
+          - deploy_stable
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy
+        run: |
+          if [ "${{ github.event.inputs.action }}" == "deploy_new" ]; then
+            echo "Deploying new version..."
+          elif [ "${{ github.event.inputs.action }}" == "deploy_stable" ]; then
+            echo "Deploying previous stable version..."
+          else
+            echo "Unknown action: ${{ github.event.inputs.action }}"
+            exit 1
+          fi
