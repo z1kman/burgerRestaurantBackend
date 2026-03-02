@@ -15,6 +15,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
+      SERVER_IP: ${{ vars.SERVER_IP }}
       DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
       VERSION_FILE_NAME: "version.env"
 
@@ -29,6 +30,9 @@ jobs:
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known_hosts
+        run: ssh-keyscan -H $SERVER_IP  >> ~/.ssh/known_hosts
 
       - name: Run Ansible [Switch version]
         run: ansible-playbook -i ansible/inventory.yml ansible/playbook_switch_version.yml -e "apply_version=${{ github.event.inputs.action }}"
