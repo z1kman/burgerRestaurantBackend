@@ -18,6 +18,9 @@ jobs:
       SERVER_IP: ${{ vars.SERVER_IP }}
       DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
       VERSION_FILE_NAME: "version.env"
+      DOCKER_ROUTER_CONTAINER_NAME: "burger-router"
+      DOCKER_BACKEND_NAME: "backend"
+      DOCKER_SWAGGER_NAME: "swagger"
 
     steps:
       - name: Checkout code

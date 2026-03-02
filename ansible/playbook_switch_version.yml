@@ -6,6 +6,9 @@
     server_build_path: "/var/www/{{ domain_name }}"
     version_file_name: "{{ lookup('env','VERSION_FILE_NAME') }}"
     version_file_path: "{{ server_build_path }}/{{ version_file_name }}"
+    container_router_name: "{{ lookup('env','DOCKER_ROUTER_CONTAINER_NAME') }}"
+    swagger_name: "{{ lookup('env','DOCKER_SWAGGER_NAME') }}"
+    backend_name: "{{ lookup('env','DOCKER_BACKEND_NAME') }}"
 
   tasks:
     - name: Read version file
@@ -23,3 +26,37 @@
     - name: Show versions
       debug:
         msg: "prev_stable={{ prev_stable }}, new={{ new }}"
+
+    - name: Set target SHA
+      set_fact:
+          target_sha: "{{ new if apply_version == new else prev_stable }}"
+
+
+    - name: Get the IP address of the target backend container
+      shell: |
+        docker inspect -f "{{ "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" }}" {{backend_name}}-{{ target_sha }}
+      register: target_api_container_ip
+
+    - name: Get the IP address of the target swagger container
+      shell: |
+        docker inspect -f "{{ "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" }}" {{swagger_name}}-{{ target_sha }}
+      register: target_swagger_container_ip
+
+    - name: Show the IP of the target API container
+      debug:
+        msg: "{{ target_api_container_ip.stdout }}"
+    
+    - name: Show the IP of the target SWAGGER container
+      debug:
+        msg: "{{ target_swagger_container_ip.stdout }}"
+
+    - name: Generate NGINX Config for switching traffic to the target containers
+      template:
+        src: templates/router-nginx.conf.j2
+        dest: "{{ server_build_path }}/nginx/conf.d/default.conf"
+      vars:
+        api_ip: "{{ target_api_container_ip.stdout }}"
+        swagger_ip: "{{ target_swagger_container_ip.stdout }}"
+
+    - name: Reload NGINX inside container
+      command: docker exec {{ container_router_name }} nginx -s reload
