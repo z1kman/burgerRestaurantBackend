@@ -8,19 +8,24 @@
     database_url: "{{ lookup('env','DATABASE_URL') }}"
     api_port: "{{lookup('env','API_PORT') }}"
     swagger_port: "{{lookup('env','SWAGGER_PORT') }}"
-    short_sha: "{{ lookup('env','SHORT_SHA') }}"
+    swagger_name: "{{ lookup('env','DOCKER_SWAGGER_NAME') }}"
+    backend_name: "{{ lookup('env','DOCKER_BACKEND_NAME') }}"
+    current_sha: "{{ lookup('env','CURRENT_SHA') }}"
     network_name: "prod_burger_network"
     image_prefix: "{{ lookup('env','DOCKER_IMAGE_PREFIX') }}"
     server_prefix: "{{ lookup('env','DOCKER_IMAGE_SERVER_PREFIX') }}"
+
     
   tasks:
+    - include_tasks: tasks/get_blue_data.yml
+
     - name: Create .env file
       copy:
         content: |
           SECRET_AUTH_TOKEN={{ secret_auth_token }}
           DATABASE_URL={{ database_url }}
           API_PORT={{ api_port }}
-          SHORT_SHA={{ short_sha }}
+          CURRENT_SHA={{ current_sha }}
         dest: "{{ server_build_path }}/.env"
         mode: "0600"
 
@@ -38,8 +43,18 @@
     - name: Run Docker Compose
       shell: |
         cd {{ server_build_path }}
-        SHORT_SHA={{ short_sha }} \
+        CURRENT_SHA={{ current_sha }} \
         API_PORT={{ api_port }} \
         SWAGGER_PORT={{ swagger_port }} \
-        docker compose -p {{ image_prefix }}{{ server_prefix }}{{ short_sha }} up -d --build --remove-orphans
+        SWAGGER_CONTAINER_NAME={{ swagger_name }} \
+        BACKEND_CONTAINER_NAME={{ backend_name }} \
+        docker compose -p {{ image_prefix }}{{ server_prefix }}{{ current_sha }} up -d --build --remove-orphans
+      
+    - name: Create version.env file
+      copy:
+        content: |
+          PREV_STABLE={{ blue_sha }}
+          NEW={{ current_sha }}
+        dest: "{{ server_build_path }}/version.env"
+        mode: "0600"
 

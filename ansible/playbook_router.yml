@@ -6,19 +6,21 @@
     server_build_path: "/var/www/{{ domain_name }}"
     api_port: "{{lookup('env','API_PORT') }}"
     swagger_port: "{{lookup('env','SWAGGER_PORT') }}"
-    short_sha: "{{ lookup('env','SHORT_SHA') }}"
+    current_sha: "{{ lookup('env','CURRENT_SHA') }}"
     image_prefix: "{{ lookup('env','DOCKER_IMAGE_PREFIX') }}"
     container_router_name: "{{ lookup('env','DOCKER_ROUTER_CONTAINER_NAME') }}"
+    swagger_name: "{{ lookup('env','DOCKER_SWAGGER_NAME') }}"
+    backend_name: "{{ lookup('env','DOCKER_BACKEND_NAME') }}"
     
   tasks:
     - name: Get the IP address of the green backend container
       shell: |
-        docker inspect -f "{{ "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" }}" backend-{{ short_sha }}
+        docker inspect -f "{{ "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" }}" {{backend_name}}-{{ current_sha }}
       register: green_api_container_ip
 
     - name: Get the IP address of the green swagger container
       shell: |
-        docker inspect -f "{{ "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" }}" swagger-{{ short_sha }}
+        docker inspect -f "{{ "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" }}" {{swagger_name}}-{{ current_sha }}
       register: green_swagger_container_ip
 
     - name: Show the IP of the green API container
