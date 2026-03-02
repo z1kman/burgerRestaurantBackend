@@ -37,7 +37,6 @@
       debug:
         msg: "target_sha={{ target_sha }}"
 
-
     - name: Get the IP address of the target backend container
       shell: |
         docker inspect -f "{{ "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" }}" {{backend_name}}-{{ target_sha }}
