@@ -33,6 +33,10 @@
       set_fact:
           target_sha: "{{ new if apply_version == new else prev_stable }}"
 
+    - name: Show target SHA
+      debug:
+        msg: "target_sha={{ target_sha }}"
+
 
     - name: Get the IP address of the target backend container
       shell: |
