@@ -9,6 +9,8 @@
     container_router_name: "{{ lookup('env','DOCKER_ROUTER_CONTAINER_NAME') }}"
     swagger_name: "{{ lookup('env','DOCKER_SWAGGER_NAME') }}"
     backend_name: "{{ lookup('env','DOCKER_BACKEND_NAME') }}"
+    api_port: "{{lookup('env','API_PORT') }}"
+    swagger_port: "{{lookup('env','SWAGGER_PORT') }}"
 
   tasks:
     - name: Read version file

@@ -17,6 +17,8 @@ jobs:
     env:
       SERVER_IP: ${{ vars.SERVER_IP }}
       DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
+      API_PORT: ${{ vars.API_PORT }}
+      SWAGGER_PORT: ${{ vars.SWAGGER_PORT }}
       VERSION_FILE_NAME: "version.env"
       DOCKER_ROUTER_CONTAINER_NAME: "burger-router"
       DOCKER_BACKEND_NAME: "backend"
