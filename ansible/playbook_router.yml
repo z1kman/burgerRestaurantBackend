@@ -53,7 +53,7 @@
 
       - name: Generate NGINX Config
         template:
-          src: router-nginx.conf.j2
+          src: templates/router-nginx.conf.j2
           dest: "{{ server_build_path }}/nginx/conf.d/default.conf"
         vars:
           api_ip: "{{ green_api_container_ip.stdout }}"
@@ -86,7 +86,7 @@
 
       - name: Generate NGINX Config for switching traffic to the green container
         template:
-          src: router-nginx.conf.j2
+          src: templates/router-nginx.conf.j2
           dest: "{{ server_build_path }}/nginx/conf.d/default.conf"
         vars:
           api_ip: "{{ green_api_container_ip.stdout }}"
