@@ -31,7 +31,7 @@
 
     - name: Set target SHA
       set_fact:
-          target_sha: "{{ new if apply_version == new else prev_stable }}"
+          target_sha: "{{ new if apply_version == 'new' else prev_stable }}"
 
     - name: Show target SHA
       debug:
