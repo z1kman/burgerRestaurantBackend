@@ -4,28 +4,40 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: 'Choose deployment action'
+        description: 'Switch to version:'
         required: true
         type: choice
         options:
-          - deploy_new
-          - deploy_stable
+          - new
+          - stable
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      SERVER_IP: ${{ vars.SERVER_IP }}
+      DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
+      API_PORT: ${{ vars.API_PORT }}
+      SWAGGER_PORT: ${{ vars.SWAGGER_PORT }}
+      VERSION_FILE_NAME: "version.env"
+      DOCKER_ROUTER_CONTAINER_NAME: "burger-router"
+      DOCKER_BACKEND_NAME: "backend"
+      DOCKER_SWAGGER_NAME: "swagger"
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Deploy
-        run: |
-          if [ "${{ github.event.inputs.action }}" == "deploy_new" ]; then
-            echo "Deploying new version..."
-          elif [ "${{ github.event.inputs.action }}" == "deploy_stable" ]; then
-            echo "Deploying previous stable version..."
-          else
-            echo "Unknown action: ${{ github.event.inputs.action }}"
-            exit 1
-          fi
+      - name: Set SHA
+        run: echo "CURRENT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      - name: Add SSH key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known_hosts
+        run: ssh-keyscan -H $SERVER_IP  >> ~/.ssh/known_hosts
+
+      - name: Run Ansible [Switch version]
+        run: ansible-playbook -i ansible/inventory.yml ansible/playbook_switch_version.yml -e "apply_version=${{ github.event.inputs.action }}"
