@@ -14,10 +14,13 @@
     network_name: "prod_burger_network"
     image_prefix: "{{ lookup('env','DOCKER_IMAGE_PREFIX') }}"
     server_prefix: "{{ lookup('env','DOCKER_IMAGE_SERVER_PREFIX') }}"
+    container_router_name: "{{ lookup('env','DOCKER_ROUTER_CONTAINER_NAME') }}"
 
     
   tasks:
     - include_tasks: tasks/get_blue_data.yml
+      vars:
+        container_router_name: "{{ router_name }}"  
 
     - name: Create .env file
       copy:
