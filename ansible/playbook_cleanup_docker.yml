@@ -4,37 +4,25 @@
   vars:
     image_prefix: "{{ lookup('env','DOCKER_IMAGE_PREFIX') }}"
     image_server_prefix: "{{ lookup('env','DOCKER_IMAGE_SERVER_PREFIX') }}"
-    container_router_name: "{{ lookup('env','DOCKER_ROUTER_CONTAINER_NAME') }}"
 
   tasks:
-    - name: Get blue backend IP from router
-      shell: |
-        docker exec -it {{ container_router_name }} sh -c "grep 'proxy_pass' /etc/nginx/conf.d/default.conf | awk -F'[/:]' '{print \$4}'" | head -1
-      register: router_ip
-      ignore_errors: true
+    - include_tasks: tasks/get_blue_data.yml
+      vars:
+        container_router_name: "{{ lookup('env','DOCKER_ROUTER_CONTAINER_NAME') }}"  
 
     - name: Show the IP of the blue container
       debug:
-        msg: "{{ router_ip.stdout }}"
-
-    - name: Get blue backend SHA from router
-      shell: |
-        docker ps -q \
-        | xargs -I{} docker inspect -f "{{ "{{.Name}} {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" }}" {} \
-        | grep {{ router_ip.stdout }} \
-        | awk '{split($1,a,"-"); print a[2]}'
-      register: router_sha
-      ignore_errors: true
+        msg: "{{ blue_ip }}"
 
     - name: Show the hash of the blue image/container
       debug:
-        msg: "{{ router_sha.stdout }}"
+        msg: "{{ blue_sha }}"
 
     - name: Clean unecessary containers
       shell: |
         docker ps -a --format "{{ "{{.ID}} {{.Image}}" }}" \
         | grep "{{image_prefix}}{{image_server_prefix}}" \
-        | grep -v "{{ router_sha.stdout | default('') }}" \
+        | grep -v "{{ blue_sha }}" \
         | awk '{print $1}' \
         | xargs -r docker rm -f
       ignore_errors: true
@@ -48,7 +36,7 @@
       shell: |
         docker images --format "{{ "{{.ID}} {{.Repository}}" }}" \ \
         | grep "{{image_prefix}}{{image_server_prefix}}" \
-        | grep -v "{{ router_sha.stdout | default('') }}" \
+        | grep -v "{{ blue_sha }}" \
         | awk '{print $1}' \
         | xargs -r docker rmi -f
       ignore_errors: true

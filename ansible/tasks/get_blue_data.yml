@@ -1,0 +1,19 @@
+- name: Get blue backend IP from router
+  shell: |
+    docker exec -it {{ container_router_name }} sh -c "grep 'proxy_pass' /etc/nginx/conf.d/default.conf | awk -F'[/:]' '{print \$4}'" | head -1
+  register: blue_ip_raw
+  ignore_errors: true
+
+- name: Get blue backend SHA from router
+  shell: |
+    docker ps -q \
+    | xargs -I{} docker inspect -f "{{ "{{.Name}} {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" }}" {} \
+    | grep {{ blue_ip_raw.stdout }} \
+    | awk '{split($1,a,"-"); print a[2]}'
+  register: blue_sha_raw
+  ignore_errors: true
+
+- name: Set fact with just stdout
+  set_fact:
+    blue_ip: "{{ blue_ip_raw.stdout | default('') }} "
+    blue_sha: "{{ blue_sha_raw.stdout | default('') }}"

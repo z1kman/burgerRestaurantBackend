@@ -2,7 +2,7 @@
 import { NextFunction, Response } from "express";
 import { CustomRequest } from "index";
 
-const SHORT_SHA = process.env.SHORT_SHA
+const CURRENT_SHA = process.env.CURRENT_SHA
 
 export const getHealtcheck = async (
 	req: CustomRequest,
@@ -11,6 +11,6 @@ export const getHealtcheck = async (
 ) => {
 	res.json({
 		alive: true,
-		sha: SHORT_SHA
+		sha: CURRENT_SHA
 	});
 }

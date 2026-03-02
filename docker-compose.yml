@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile.backend
       args:
         APP_PORT: ${API_PORT}
-    container_name: backend-${SHORT_SHA}
+    container_name: ${BACKEND_CONTAINER_NAME}-${CURRENT_SHA}
     networks:
       - prod_burger_network
     expose:
@@ -24,7 +24,7 @@ services:
       dockerfile: Dockerfile.swagger
       args:
         APP_PORT: ${SWAGGER_PORT}
-    container_name: swagger-${SHORT_SHA}
+    container_name: ${SWAGGER_CONTAINER_NAME}-${CURRENT_SHA}
     networks:
       - prod_burger_network
     ports:
