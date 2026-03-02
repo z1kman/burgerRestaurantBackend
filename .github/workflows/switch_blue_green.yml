@@ -22,7 +22,7 @@ jobs:
       - name: Deploy
         run: |
           if [ "${{ github.event.inputs.action }}" == "deploy_new" ]; then
-            echo "Deploying new version..."
+            echo "Deploying new version.. ttte."
           elif [ "${{ github.event.inputs.action }}" == "deploy_stable" ]; then
             echo "Deploying previous stable version..."
           else
