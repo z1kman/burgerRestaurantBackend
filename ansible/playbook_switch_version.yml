@@ -15,8 +15,8 @@
 
     - name: Parse version file
       set_fact:
-       prev_stable: "{{ (versions_file_raw.content | b64decode) | regex_search('PREV_STABLE=\"([^\"]+)\"', '\\1') | first | default('') }}"
-      new: "{{ (versions_file_raw.content | b64decode) | regex_search('NEW=\"([^\"]+)\"', '\\1') | first | default('') }}"
+        prev_stable: "{{ (versions_file_raw.content | b64decode) | regex_search('PREV_STABLE=\"([^\"]+)\"', '\\1') | first | default('') }}"
+        new: "{{ (versions_file_raw.content | b64decode) | regex_search('NEW=\"([^\"]+)\"', '\\1') | first | default('') }}"
       when: 
         - not versions_file_raw.failed
 
