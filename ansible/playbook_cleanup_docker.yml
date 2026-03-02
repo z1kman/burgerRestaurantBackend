@@ -9,7 +9,7 @@
   tasks:
     - include_tasks: tasks/get_blue_data.yml
       vars:
-        container_router_name: "{{ router_name }}"  
+        container_router_name: "{{ container_router_name }}"  
 
     - name: Show the IP of the blue container
       debug:
